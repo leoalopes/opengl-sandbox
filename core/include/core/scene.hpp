@@ -2,7 +2,9 @@
 
 #include "core/camera.hpp"
 #include "core/environment.hpp"
-#include "core/light.hpp"
+#include "core/light/directional_light.hpp"
+#include "core/light/point_light.hpp"
+#include "core/light/spot_light.hpp"
 #include "core/model.hpp"
 
 #include <memory>

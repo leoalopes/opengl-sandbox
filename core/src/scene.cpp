@@ -1,7 +1,6 @@
 #include "core/scene.hpp"
 
 #include "core/camera.hpp"
-#include "core/light.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <string>
 
@@ -18,8 +17,8 @@ void Scene::draw() {
         glm::radians(camera.fov), (float)screenWidth / (float)screenHeight,
         0.1f, 100.0f);
     glm::mat4 viewMatrix = this->camera.getLookAt();
-    flashlight.updatePosition(this->camera.location);
-    flashlight.updateDirection(this->camera.forwardVector);
+    flashlight.position = this->camera.location;
+    flashlight.direction = this->camera.forwardVector;
 
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
