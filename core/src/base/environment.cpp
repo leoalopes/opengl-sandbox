@@ -5,8 +5,9 @@
 #include <stb/stb_image.h>
 
 Environment::Environment(std::string basePath)
-    : basePath(basePath), shader("assets/shaders/environment.vert",
-                                 "assets/shaders/environment.frag") {
+    : basePath(PROJECT_DIRECTORY + basePath),
+      shader("assets/shaders/environment.vert",
+             "assets/shaders/environment.frag") {
     this->setupBuffer();
     this->setupTexture();
 }

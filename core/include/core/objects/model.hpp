@@ -18,7 +18,7 @@ class Model {
     glm::vec3 borderColor;
 
     Model(std::string path, std::shared_ptr<Shader> shader)
-        : path(path), shader(shader) {
+        : path(PROJECT_DIRECTORY + path), shader(shader) {
         this->loadModel();
     };
 

@@ -6,10 +6,10 @@
 #include <iostream>
 #include <sstream>
 
-std::string readFile(const char *path) {
+std::string readFile(const std::string &path) {
     std::basic_ifstream<char> file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    file.open(path);
+    file.open(PROJECT_DIRECTORY + path);
 
     std::basic_stringstream<char> fileStream;
     fileStream << file.rdbuf();
@@ -38,7 +38,7 @@ unsigned int compileShader(GLenum type, std::string sourceCode) {
     return shader;
 }
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+Shader::Shader(const std::string vertexPath, const std::string fragmentPath) {
     std::string vertexCode, fragmentCode;
     try {
         vertexCode = readFile(vertexPath);
