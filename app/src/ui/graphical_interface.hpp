@@ -1,5 +1,5 @@
 #pragma once
-#include "core/scene.hpp"
+#include <core/base/scene.hpp>
 
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>

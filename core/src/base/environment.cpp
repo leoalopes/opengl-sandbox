@@ -1,9 +1,8 @@
-#include <core/environment.hpp>
+#include "core/base/environment.hpp"
 
-#include "glm/gtc/type_ptr.hpp"
-#include <stb/stb_image.h>
-
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <stb/stb_image.h>
 
 Environment::Environment(std::string basePath)
     : basePath(basePath), shader("assets/shaders/environment.vert",

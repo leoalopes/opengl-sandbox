@@ -1,7 +1,7 @@
-#include "core/scene.hpp"
+#include "core/base/scene.hpp"
+#include "core/base/camera.hpp"
 
-#include "core/camera.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <string>
 
 Scene::Scene(unsigned int screenWidth, unsigned int screenHeight)

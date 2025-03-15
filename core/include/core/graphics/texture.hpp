@@ -1,6 +1,8 @@
 #pragma once
-#include "core/shader.hpp"
 #include <glad/glad.h>
+
+#include "core/graphics/shader.hpp"
+
 #include <vector>
 
 const GLenum DEFAULT_TEXTURE_TYPE = GL_RGBA;

@@ -1,9 +1,9 @@
 #pragma once
 #include <glad/glad.h>
 
-#include "core/shader.hpp"
-#include <glm/glm.hpp>
+#include "core/graphics/shader.hpp"
 
+#include <glm/glm.hpp>
 #include <string>
 
 class Environment {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "core/shader.hpp"
+#include "core/graphics/shader.hpp"
+
 #include <glm/glm.hpp>
 
 class Light {

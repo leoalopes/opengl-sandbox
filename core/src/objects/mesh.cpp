@@ -1,8 +1,8 @@
-#include <cstddef>
 #include <glad/glad.h>
 
-#include <core/mesh.hpp>
+#include "core/objects/mesh.hpp"
 
+#include <cstddef>
 #include <iostream>
 
 Mesh::Mesh(const float *positions, const float *normals, const float *texCoords,

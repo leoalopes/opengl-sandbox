@@ -1,7 +1,7 @@
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/matrix.hpp"
-#include <core/model.hpp>
+#include "core/objects/model.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/matrix.hpp>
 #include <iostream>
 
 void Model::loadModel() {

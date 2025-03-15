@@ -1,18 +1,16 @@
 #include <glad/glad.h>
 
-#include <GLFW/glfw3.h>
+#include "ui/graphical_interface.hpp"
+#include <core/base/camera.hpp>
+#include <core/base/scene.hpp>
+#include <core/graphics/shader.hpp>
+#include <core/graphics/texture.hpp>
+#include <core/objects/model.hpp>
 
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "core/model.hpp"
-#include "core/scene.hpp"
-#include "ui/graphical_interface.hpp"
-#include <core/camera.hpp>
-#include <core/shader.hpp>
-#include <core/texture.hpp>
-
 #include <iostream>
 #include <memory>
 

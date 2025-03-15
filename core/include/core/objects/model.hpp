@@ -1,13 +1,13 @@
 #pragma once
 
-#include <memory>
-#include <tiny_gltf/tiny_gltf.h>
+#include "core/base/transform.hpp"
+#include "core/graphics/shader.hpp"
+#include "core/graphics/texture.hpp"
+#include "core/objects/mesh.hpp"
 
-#include "core/mesh.hpp"
-#include "core/shader.hpp"
-#include "core/texture.hpp"
-#include "core/transform.hpp"
+#include <memory>
 #include <string>
+#include <tiny_gltf/tiny_gltf.h>
 
 class Model {
   public:

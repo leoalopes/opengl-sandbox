@@ -1,6 +1,6 @@
-#include "core/transform.hpp"
+#include "core/base/transform.hpp"
 
-#include "glm/ext/matrix_transform.hpp"
+#include <glm/ext/matrix_transform.hpp>
 
 Transform::Transform() : translation(0.0f), rotation(0.0f), scale(1.0f) {}
 

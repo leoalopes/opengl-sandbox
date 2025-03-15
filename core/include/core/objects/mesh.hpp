@@ -1,9 +1,9 @@
 #pragma once
 
-#include "core/texture.hpp"
-#include <glm/glm.hpp>
+#include "core/graphics/texture.hpp"
 
 #include <cstddef>
+#include <glm/glm.hpp>
 #include <vector>
 
 struct Vertex {

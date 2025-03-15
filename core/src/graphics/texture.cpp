@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 
-#include "core/texture.hpp"
+#include "core/graphics/texture.hpp"
+
 #include <stb/stb_image.h>
 
 Texture::Texture(std::vector<unsigned char> &textureData, int width, int height,
