@@ -37,6 +37,8 @@ class Scene {
 
     Scene(unsigned int screenWidth, unsigned int screenHeight);
 
+    std::map<float, std::shared_ptr<Model>> getModelsByDistance();
+
     void draw();
     void drawModel(Model *model, Shader *shader, glm::mat4 &projectionMatrix,
                    glm::mat4 &viewMatrix);

@@ -12,6 +12,17 @@ Scene::Scene(unsigned int screenWidth, unsigned int screenHeight)
                  glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(20.0f)),
                  glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f) {};
 
+std::map<float, std::shared_ptr<Model>> Scene::getModelsByDistance() {
+    std::map<float, std::shared_ptr<Model>> modelsByDistance;
+    for (const auto &model : this->models) {
+        float distance =
+            glm::length(model->transform.position - this->camera.location);
+        modelsByDistance[distance] = model;
+    }
+
+    return modelsByDistance;
+}
+
 void Scene::draw() {
     glm::mat4 projectionMatrix = glm::perspective(
         glm::radians(camera.fov), (float)screenWidth / (float)screenHeight,

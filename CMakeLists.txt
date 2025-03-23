@@ -10,7 +10,11 @@ set(CMAKE_CXX_COMPILER "c++")
 project(OpenGLSandbox VERSION 1.0 LANGUAGES C CXX)
 add_compile_definitions(PROJECT_DIRECTORY="${CMAKE_SOURCE_DIR}/")
 
+find_package(glfw3 3.4 REQUIRED)
+find_package(ImGui REQUIRED)
+find_package(OpenGL REQUIRED)
+
 add_subdirectory(dependencies)
 add_subdirectory(core)
 add_subdirectory(app)
-
+add_subdirectory(examples)
