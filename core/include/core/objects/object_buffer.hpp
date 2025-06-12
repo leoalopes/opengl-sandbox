@@ -23,4 +23,6 @@ class ObjectBuffer {
 
     void updateBuffer(std::vector<Vertex> vertices,
                       std::vector<unsigned int> indices);
+
+    void draw();
 };

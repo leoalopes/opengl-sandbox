@@ -1,3 +1,4 @@
+#include "glm/fwd.hpp"
 #include <core/interface/window.hpp>
 
 #include <core/base/camera.hpp>
@@ -24,6 +25,9 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     std::shared_ptr<Shader> borderShader = std::make_shared<Shader>(
         "assets/shaders/highlight.vert", "assets/shaders/solid.frag");
@@ -79,12 +83,17 @@ int main() {
     lamppost->borderSize = 0.05f;
     lamppost->borderColor = glm::vec3(1.0f, 0.0f, 0.0f);
 
+    std::shared_ptr<Model> basicWindow = std::make_shared<Model>(
+        "assets/models/window/scene.gltf", standardShader);
+    basicWindow->transform.rotation = {-90, 0, 0};
+
     scene->models.push_back(table);
     scene->models.push_back(refrigerator);
     scene->models.push_back(plainWall);
     scene->models.push_back(asphaltWall);
     scene->models.push_back(tiledWall);
     scene->models.push_back(lamppost);
+    scene->models.push_back(basicWindow);
 
     std::shared_ptr<Environment> skybox =
         std::make_shared<Environment>("assets/models/skybox");

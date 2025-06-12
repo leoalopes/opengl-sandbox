@@ -51,3 +51,9 @@ void ObjectBuffer::updateBuffer(std::vector<Vertex> vertices,
 
     glBindVertexArray(0);
 }
+
+void ObjectBuffer::draw() {
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}

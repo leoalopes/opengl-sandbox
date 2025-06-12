@@ -14,4 +14,6 @@ class PointLight : public Light {
                float constant, float linear, float quadratic);
 
     void updateShader(std::string prefix, Shader *shader) override;
+
+    void drawDebugBillboard();
 };

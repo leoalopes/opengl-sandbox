@@ -10,23 +10,28 @@ Scene::Scene(unsigned int screenWidth, unsigned int screenHeight)
                        DEFAULT_DL_DIFFUSE, DEFAULT_DL_SPECULAR),
       flashlight(glm::vec3(0.0f), glm::vec3(0.0f),
                  glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(20.0f)),
-                 glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f) {};
+                 glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f) {
+    this->updateProjectionMatrix();
+};
 
-std::map<float, std::shared_ptr<Model>> Scene::getModelsByDistance() {
-    std::map<float, std::shared_ptr<Model>> modelsByDistance;
+void Scene::updateProjectionMatrix() {
+    this->projectionMatrix = glm::perspective(
+        glm::radians(camera.fov), (float)screenWidth / (float)screenHeight,
+        0.1f, 100.0f);
+}
+
+std::multimap<float, std::shared_ptr<Model>> Scene::getModelsByDistance() {
+    std::multimap<float, std::shared_ptr<Model>> modelsByDistance;
     for (const auto &model : this->models) {
         float distance =
             glm::length(model->transform.position - this->camera.location);
-        modelsByDistance[distance] = model;
+        modelsByDistance.insert({distance, model});
     }
 
     return modelsByDistance;
 }
 
 void Scene::draw() {
-    glm::mat4 projectionMatrix = glm::perspective(
-        glm::radians(camera.fov), (float)screenWidth / (float)screenHeight,
-        0.1f, 100.0f);
     glm::mat4 viewMatrix = this->camera.getLookAt();
     flashlight.position = this->camera.location;
     flashlight.direction = this->camera.forwardVector;
@@ -34,8 +39,14 @@ void Scene::draw() {
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
-    for (size_t i = 0; i < this->models.size(); i++) {
-        std::shared_ptr<Model> model = this->models.at(i);
+    if (this->environment) {
+        this->environment->draw(viewMatrix, projectionMatrix);
+    }
+
+    auto modelsByDistance = this->getModelsByDistance();
+    for (auto it = modelsByDistance.rbegin(); it != modelsByDistance.rend();
+         ++it) {
+        std::shared_ptr<Model> &model = it->second;
         bool hasBorder = model->borderSize > 0.0f;
 
         if (hasBorder) {
@@ -65,8 +76,8 @@ void Scene::draw() {
         }
     }
 
-    if (this->environment) {
-        this->environment->draw(viewMatrix, projectionMatrix);
+    for (size_t i = 0; i < this->pointLights.size(); i++) {
+        this->pointLights.at(i)->drawDebugBillboard();
     }
 }
 

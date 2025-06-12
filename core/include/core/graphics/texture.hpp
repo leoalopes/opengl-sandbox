@@ -20,6 +20,23 @@ class Texture {
             GLenum textureMinFilter = DEFAULT_TEXTURE_MIN_FILTER,
             GLenum textureMagFilter = DEFAULT_TEXTURE_MAG_FILTER);
 
+    Texture(unsigned char *textureData, int width, int height,
+            GLenum type = DEFAULT_TEXTURE_TYPE,
+            GLenum textureWrapS = DEFAULT_TEXTURE_WRAP_S,
+            GLenum textureWrapT = DEFAULT_TEXTURE_WRAP_T,
+            GLenum textureMinFilter = DEFAULT_TEXTURE_MIN_FILTER,
+            GLenum textureMagFilter = DEFAULT_TEXTURE_MAG_FILTER);
+
+    Texture(std::string path, GLenum type = DEFAULT_TEXTURE_TYPE,
+            GLenum textureWrapS = DEFAULT_TEXTURE_WRAP_S,
+            GLenum textureWrapT = DEFAULT_TEXTURE_WRAP_T,
+            GLenum textureMinFilter = DEFAULT_TEXTURE_MIN_FILTER,
+            GLenum textureMagFilter = DEFAULT_TEXTURE_MAG_FILTER);
+
+    void setupTexture(unsigned char *textureData, int width, int height,
+                      GLenum type, GLenum textureWrapS, GLenum textureWrapT,
+                      GLenum textureMinFilter, GLenum textureMagFilter);
+
     void bind();
     void unbind();
 

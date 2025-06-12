@@ -1,5 +1,5 @@
 ## OpenGL Sandbox
 
-This repository holds a sandbox to test different computer graphics techniques with OpenGL.
+This repository holds a sandbox for me to try out different things from https://learnopengl.com.
 
-It's supposed to have small base classes for common operations/resources in the core library and simple examples using those base classes.
+It's supposed to have small base classes for common operations/resources in the core library.

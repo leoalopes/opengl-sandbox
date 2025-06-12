@@ -195,6 +195,37 @@ void Model::processMesh(const tinygltf::Mesh &mesh) {
             continue;
         }
 
+        glm::vec2 materialOffset{0};
+        glm::vec2 materialScale{1};
+        auto khrExtension =
+            material.pbrMetallicRoughness.baseColorTexture.extensions.find(
+                "KHR_texture_transform");
+        if (khrExtension !=
+            material.pbrMetallicRoughness.baseColorTexture.extensions.end()) {
+            std::cout << "Material has KHR texture transform extension" << '\n';
+            const tinygltf::Value &transform = khrExtension->second;
+
+            if (transform.Has("offset") && transform.Get("offset").IsArray()) {
+                materialOffset = {
+                    static_cast<float>(
+                        transform.Get("offset").Get(0).Get<double>()),
+                    static_cast<float>(
+                        transform.Get("offset").Get(1).Get<double>())};
+                std::cout << "Offset: " << materialOffset.x << ", "
+                          << materialOffset.y << "\n";
+            }
+
+            if (transform.Has("scale") && transform.Get("scale").IsArray()) {
+                materialScale = {
+                    static_cast<float>(
+                        transform.Get("scale").Get(0).Get<double>()),
+                    static_cast<float>(
+                        transform.Get("scale").Get(1).Get<double>())};
+                std::cout << "Scale: " << materialScale.x << ", "
+                          << materialScale.y << "\n";
+            }
+        }
+
         Mesh meshInstance{positions,
                           normals,
                           texCoords,
@@ -202,7 +233,9 @@ void Model::processMesh(const tinygltf::Mesh &mesh) {
                           convertedIndices,
                           indexAccessor.count,
                           &this->textures.at(baseColorTexture),
-                          &this->textures.at(metallicRoughnessTexture)};
+                          &this->textures.at(metallicRoughnessTexture),
+                          materialOffset,
+                          materialScale};
 
         const int emissiveTexture = material.emissiveTexture.index;
         if (emissiveTexture >= 0) {

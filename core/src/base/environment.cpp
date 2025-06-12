@@ -13,8 +13,8 @@ Environment::Environment(std::string basePath)
 }
 
 void Environment::setupBuffer() {
-    float skyboxVertices[] = {-1.0f, -1.0f, 1.0f,  -1.0f, 3.0f,
-                              1.0f,  3.0f,  -1.0f, 1.0f};
+    float skyboxVertices[] = {-1.0f, -1.0f, 1.0f, 3.0f, -1.0f,
+                              1.0f,  -1.0f, 3.0f, 1.0f};
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);

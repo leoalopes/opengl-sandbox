@@ -95,7 +95,12 @@ vec3 calculateSpotLight(
 );
 
 void main() {
-    vec3 diffuseColor = vec3(texture(material.baseColor, TexCoords));
+    vec4 textureColor = texture(material.baseColor, TexCoords);
+    if (textureColor.a < 0.1) {
+        // discard;
+    }
+
+    vec3 diffuseColor = vec3(textureColor);
     vec3 metallicRoughness = vec3(texture(material.metallicRoughness, TexCoords));
 
     float metalness = metallicRoughness.b;
@@ -145,7 +150,7 @@ void main() {
         radiance += emissiveColor;
     }
 
-    FragColor = vec4(radiance, 1.0);
+    FragColor = vec4(radiance, textureColor.a);
 }
 
 vec3 calculateDirectionalLight(
