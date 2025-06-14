@@ -10,9 +10,10 @@
 
 class Mesh {
   public:
-    Mesh(const float *positions, const float *normals, const float *texCoords,
-         size_t vertexCount, std::vector<unsigned int> indices,
-         size_t indexCount, Texture *baseColor, Texture *metallicRoughness,
+    Mesh(glm::mat4 transform, const float *positions, const float *normals,
+         const float *texCoords, size_t vertexCount,
+         std::vector<unsigned int> indices, size_t indexCount,
+         Texture *baseColor, Texture *metallicRoughness,
          glm::vec2 materialOffset, glm::vec2 materialScale);
 
     Texture *getBaseColor() const { return this->baseColor; };
@@ -29,7 +30,7 @@ class Mesh {
 
     Texture *getMetallicRoughness() const { return this->metallicRoughness; };
 
-    void draw();
+    void draw(Shader *shader, glm::mat4 parentTransform);
 
   private:
     ObjectBuffer buffer;
@@ -37,6 +38,7 @@ class Mesh {
     Texture *emissiveColor = nullptr;
     Texture *metallicRoughness;
     Texture *normalTexture = nullptr;
+    glm::mat4 transform;
 
     void mergeVertexAttributes(const float *positions, const float *normals,
                                const float *texCoords, size_t vertexCount,

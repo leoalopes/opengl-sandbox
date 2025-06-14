@@ -1,4 +1,5 @@
 #include "core/objects/model.hpp"
+#include "glm/fwd.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/matrix.hpp>
@@ -44,18 +45,24 @@ void Model::processTexture(const tinygltf::Texture &texture, int index) {
     this->textures.insert({index, {image, width, height}});
 }
 
-void Model::processNode(const tinygltf::Node &node) {
+void Model::processNode(const tinygltf::Node &node, glm::mat4 parentTransform) {
+    glm::mat4 nodeMatrix{1.0f};
+    if (node.matrix.size() == 16) {
+        nodeMatrix = glm::make_mat4(&node.matrix[0]);
+    }
+    glm::mat4 transform = parentTransform * nodeMatrix;
+
     if (node.mesh >= 0) {
         const tinygltf::Mesh &mesh = tgModel.meshes[node.mesh];
-        this->processMesh(mesh);
+        this->processMesh(mesh, transform);
     }
 
     for (int childIndex : node.children) {
-        this->processNode(tgModel.nodes[childIndex]);
+        this->processNode(tgModel.nodes[childIndex], transform);
     }
 }
 
-void Model::processMesh(const tinygltf::Mesh &mesh) {
+void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
     for (const tinygltf::Primitive &primitive : mesh.primitives) {
         if (primitive.mode != 4) {
             std::cerr << "Error: skipping primitive due a non-triangle mode "
@@ -226,7 +233,8 @@ void Model::processMesh(const tinygltf::Mesh &mesh) {
             }
         }
 
-        Mesh meshInstance{positions,
+        Mesh meshInstance{transform,
+                          positions,
                           normals,
                           texCoords,
                           positionAccessor.count,
@@ -255,11 +263,6 @@ void Model::processMesh(const tinygltf::Mesh &mesh) {
 void Model::draw() { this->draw(this->shader.get()); }
 
 void Model::draw(Shader *overrideShader) {
-    glm::mat4 modelMatrix = this->transform.getMatrix();
-    glm::mat4 normalMatrix = glm::inverse(glm::transpose(modelMatrix));
-    overrideShader->setMatrix("model", glm::value_ptr(modelMatrix));
-    overrideShader->setMatrix("normalMatrix", glm::value_ptr(modelMatrix));
-
     for (unsigned int i = 0; i < this->meshes.size(); i++) {
         Mesh mesh = this->meshes[i];
 
@@ -283,6 +286,6 @@ void Model::draw(Shader *overrideShader) {
 
         overrideShader->setFloat("material.shininess", 64.0f);
 
-        mesh.draw();
+        mesh.draw(overrideShader, this->transform.getMatrix());
     }
 }

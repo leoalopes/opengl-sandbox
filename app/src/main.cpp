@@ -6,6 +6,8 @@
 #include <core/graphics/shader.hpp>
 #include <core/graphics/texture.hpp>
 #include <core/objects/model.hpp>
+#include <core/objects/object_buffer.hpp>
+#include <core/objects/texture_renderer.hpp>
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -52,14 +54,10 @@ int main() {
     std::shared_ptr<Model> table = std::make_shared<Model>(
         "assets/models/table/SM_OfficeTable.gltf", standardShader);
     table->transform.position.z = -2.0f;
-    table->borderSize = 0.1f;
-    table->borderColor = glm::vec3(0.0f, 1.0f, 0.0f);
 
     std::shared_ptr<Model> refrigerator = std::make_shared<Model>(
         "assets/models/refrigerator/SM_Refrigerator.gltf", standardShader);
     refrigerator->transform.position.z = 4.0f;
-    refrigerator->borderSize = 0.15f;
-    refrigerator->borderColor = glm::vec3(0.5f);
 
     std::shared_ptr<Model> plainWall = std::make_shared<Model>(
         "assets/models/wall/SM_Wall_Plain.gltf", standardShader);
@@ -78,14 +76,12 @@ int main() {
 
     std::shared_ptr<Model> lamppost = std::make_shared<Model>(
         "assets/models/lamppost/scene.gltf", standardShader);
-    lamppost->transform.scale = glm::vec3(0.01f);
-    lamppost->transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    lamppost->borderSize = 0.05f;
-    lamppost->borderColor = glm::vec3(1.0f, 0.0f, 0.0f);
+    lamppost->transform.position = glm::vec3(-0.5f, 0.1f, 0.5f);
 
     std::shared_ptr<Model> basicWindow = std::make_shared<Model>(
         "assets/models/window/scene.gltf", standardShader);
-    basicWindow->transform.rotation = {-90, 0, 0};
+    basicWindow->transform.position.x = -2.0f;
+    basicWindow->transform.position.z = -1.0f;
 
     scene->models.push_back(table);
     scene->models.push_back(refrigerator);
@@ -99,13 +95,39 @@ int main() {
         std::make_shared<Environment>("assets/models/skybox");
     scene->environment = skybox;
 
+    TextureRenderer renderToTexture{720, 1280};
+    ObjectBuffer screenQuad{
+        {{{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+         {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+         {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+         {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}}},
+        {0, 1, 2, 2, 3, 0}};
+    Shader renderToTextureShader{"assets/shaders/identity.vert",
+                                 "assets/shaders/kernel.frag"};
+
     while (!glfwWindowShouldClose(window.glfwWindow)) {
         window.update();
         processInput(window, scene);
 
+        renderToTexture.bind();
+        glViewport(0, 0, 1280, 720); // Set viewport to match texture size
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear with a visible color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
                 GL_STENCIL_BUFFER_BIT);
         scene->draw();
+
+        renderToTexture.unbind();
+        int width, height;
+        glfwGetFramebufferSize(window.glfwWindow, &width, &height);
+        glViewport(0, 0, width, height);
+        glClearColor(0.0, 0.0, 0.0, 1.0); // Black background
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
+                GL_STENCIL_BUFFER_BIT);
+
+        renderToTextureShader.use();
+        renderToTexture.texture.use(0, &renderToTextureShader,
+                                    "material.baseColor");
+        screenQuad.draw();
 
         glfwSwapBuffers(window.glfwWindow);
         glfwPollEvents();

@@ -4,6 +4,7 @@
 #include "core/graphics/shader.hpp"
 #include "core/graphics/texture.hpp"
 #include "core/objects/mesh.hpp"
+#include "glm/fwd.hpp"
 
 #include <memory>
 #include <string>
@@ -35,6 +36,7 @@ class Model {
     void loadModel();
 
     void processTexture(const tinygltf::Texture &texture, int index);
-    void processNode(const tinygltf::Node &node);
-    void processMesh(const tinygltf::Mesh &mesh);
+    void processNode(const tinygltf::Node &node,
+                     glm::mat4 parentTransform = {1.0f});
+    void processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform);
 };

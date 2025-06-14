@@ -1,15 +1,17 @@
 #include <glad/glad.h>
 
 #include "core/objects/mesh.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <cstddef>
 #include <iostream>
 
-Mesh::Mesh(const float *positions, const float *normals, const float *texCoords,
-           size_t vertexCount, std::vector<unsigned int> indices,
-           size_t indexCount, Texture *baseColor, Texture *metallicRoughness,
+Mesh::Mesh(glm::mat4 transform, const float *positions, const float *normals,
+           const float *texCoords, size_t vertexCount,
+           std::vector<unsigned int> indices, size_t indexCount,
+           Texture *baseColor, Texture *metallicRoughness,
            glm::vec2 materialOffset, glm::vec2 materialScale)
-    : buffer({}, {}), baseColor(baseColor),
+    : transform(transform), buffer({}, {}), baseColor(baseColor),
       metallicRoughness(metallicRoughness) {
     if (vertexCount == 0 || indexCount == 0) {
         std::cerr << "Error: Mesh has no vertices or indices!" << std::endl;
@@ -45,4 +47,10 @@ void Mesh::mergeVertexAttributes(const float *positions, const float *normals,
     this->buffer.updateBuffer(vertices, indices);
 }
 
-void Mesh::draw() { this->buffer.draw(); }
+void Mesh::draw(Shader *shader, glm::mat4 parentTransform) {
+    glm::mat4 modelMatrix = parentTransform * this->transform;
+    glm::mat4 normalMatrix = glm::inverse(glm::transpose(modelMatrix));
+    shader->setMatrix("model", glm::value_ptr(modelMatrix));
+    shader->setMatrix("normalMatrix", glm::value_ptr(modelMatrix));
+    this->buffer.draw();
+}

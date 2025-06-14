@@ -13,6 +13,8 @@ const GLenum DEFAULT_TEXTURE_MAG_FILTER = GL_LINEAR;
 
 class Texture {
   public:
+    unsigned int textureId;
+
     Texture(std::vector<unsigned char> &textureData, int width, int height,
             GLenum type = DEFAULT_TEXTURE_TYPE,
             GLenum textureWrapS = DEFAULT_TEXTURE_WRAP_S,
@@ -41,7 +43,4 @@ class Texture {
     void unbind();
 
     void use(int slot, Shader *shader, std::string uniform);
-
-  private:
-    unsigned int textureId;
 };
