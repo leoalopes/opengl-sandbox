@@ -11,30 +11,35 @@ Scene::Scene(unsigned int screenWidth, unsigned int screenHeight)
       flashlight(glm::vec3(0.0f), glm::vec3(0.0f),
                  glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(20.0f)),
                  glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f) {
-    this->updateProjectionMatrix();
+    this->updateProjectionMatrix(&this->camera);
 };
 
-void Scene::updateProjectionMatrix() {
+void Scene::updateProjectionMatrix(Camera *renderCamera) {
     this->projectionMatrix = glm::perspective(
-        glm::radians(camera.fov), (float)screenWidth / (float)screenHeight,
-        0.1f, 100.0f);
+        glm::radians(renderCamera->fov),
+        (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 }
 
-std::multimap<float, std::shared_ptr<Model>> Scene::getModelsByDistance() {
+std::multimap<float, std::shared_ptr<Model>>
+Scene::getModelsByDistance(Camera *renderCamera) {
     std::multimap<float, std::shared_ptr<Model>> modelsByDistance;
     for (const auto &model : this->models) {
         float distance =
-            glm::length(model->transform.position - this->camera.location);
+            glm::length(model->transform.position - renderCamera->location);
         modelsByDistance.insert({distance, model});
     }
 
     return modelsByDistance;
 }
 
-void Scene::draw() {
-    glm::mat4 viewMatrix = this->camera.getLookAt();
-    flashlight.position = this->camera.location;
-    flashlight.direction = this->camera.forwardVector;
+void Scene::draw() { this->draw(&this->camera); }
+
+void Scene::draw(Camera *renderCamera) {
+    this->updateProjectionMatrix(renderCamera);
+
+    glm::mat4 viewMatrix = renderCamera->getLookAt();
+    flashlight.position = renderCamera->location;
+    flashlight.direction = renderCamera->forwardVector;
 
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -43,18 +48,21 @@ void Scene::draw() {
         this->environment->draw(viewMatrix, projectionMatrix);
     }
 
-    auto modelsByDistance = this->getModelsByDistance();
+    auto modelsByDistance = this->getModelsByDistance(renderCamera);
     for (auto it = modelsByDistance.rbegin(); it != modelsByDistance.rend();
          ++it) {
         std::shared_ptr<Model> &model = it->second;
-        bool hasBorder = model->borderSize > 0.0f;
+        if (!model->visible) {
+            continue;
+        }
 
+        bool hasBorder = model->borderSize > 0.0f;
         if (hasBorder) {
             glStencilMask(0xFF);
             glClear(GL_STENCIL_BUFFER_BIT);
 
-            this->drawModel(model.get(), model->shader.get(), projectionMatrix,
-                            viewMatrix);
+            this->drawModel(renderCamera, model.get(), model->shader.get(),
+                            projectionMatrix, viewMatrix);
 
             glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
             glStencilMask(0x00);
@@ -64,15 +72,15 @@ void Scene::draw() {
             this->borderShader->setVector("color", model->borderColor.x,
                                           model->borderColor.y,
                                           model->borderColor.z);
-            this->drawModel(model.get(), this->borderShader.get(),
+            this->drawModel(renderCamera, model.get(), this->borderShader.get(),
                             projectionMatrix, viewMatrix);
 
             glStencilFunc(GL_ALWAYS, 1, 0xFF);
             glStencilMask(0x00);
         } else {
             glStencilMask(0x00);
-            this->drawModel(model.get(), model->shader.get(), projectionMatrix,
-                            viewMatrix);
+            this->drawModel(renderCamera, model.get(), model->shader.get(),
+                            projectionMatrix, viewMatrix);
         }
     }
 
@@ -81,8 +89,8 @@ void Scene::draw() {
     }
 }
 
-void Scene::drawModel(Model *model, Shader *shader, glm::mat4 &projectionMatrix,
-                      glm::mat4 &viewMatrix) {
+void Scene::drawModel(Camera *renderCamera, Model *model, Shader *shader,
+                      glm::mat4 &projectionMatrix, glm::mat4 &viewMatrix) {
     shader->use();
     directionalLight.updateShader("directionalLight", shader);
 
@@ -109,8 +117,8 @@ void Scene::drawModel(Model *model, Shader *shader, glm::mat4 &projectionMatrix,
         this->flashlight.updateShader(flashlightPrefix, shader);
     }
 
-    shader->setVector("cameraPosition", this->camera.location.x,
-                      this->camera.location.y, this->camera.location.z);
+    shader->setVector("cameraPosition", renderCamera->location.x,
+                      this->camera.location.y, renderCamera->location.z);
 
     shader->setMatrix("projection", glm::value_ptr(projectionMatrix));
     shader->setMatrix("view", glm::value_ptr(viewMatrix));

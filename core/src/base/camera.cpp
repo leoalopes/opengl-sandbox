@@ -12,16 +12,19 @@ Camera::Camera(glm::vec3 location, glm::vec3 worldUp, float fov)
     this->yaw = -90.0f;
 }
 
-void Camera::updateCameraVectors() {
-    this->forwardVector = {cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-                           sin(glm::radians(pitch)),
-                           sin(glm::radians(yaw)) * cos(glm::radians(pitch))};
-    this->forwardVector = glm::normalize(this->forwardVector);
-
+void Camera::updateCameraVectorsFromForwardVector(glm::vec3 forwardVector) {
+    this->forwardVector = glm::normalize(forwardVector);
     this->rightVector =
         glm::normalize(glm::cross(this->forwardVector, this->worldUp));
     this->upVector =
         glm::normalize(glm::cross(this->rightVector, this->forwardVector));
+}
+
+void Camera::updateCameraVectors() {
+    glm::vec3 newForward{cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                         sin(glm::radians(pitch)),
+                         sin(glm::radians(yaw)) * cos(glm::radians(pitch))};
+    this->updateCameraVectorsFromForwardVector(newForward);
 }
 
 glm::mat4 Camera::getLookAt() {

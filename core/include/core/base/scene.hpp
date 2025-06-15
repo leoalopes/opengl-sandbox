@@ -30,7 +30,7 @@ class Scene {
     std::vector<std::shared_ptr<SpotLight>> spotLights;
 
     SpotLight flashlight;
-    bool flashlightEnabled = false;
+    bool flashlightEnabled = true;
 
     std::vector<std::shared_ptr<Model>> models;
 
@@ -38,11 +38,13 @@ class Scene {
 
     Scene(unsigned int screenWidth, unsigned int screenHeight);
 
-    void updateProjectionMatrix();
+    void updateProjectionMatrix(Camera *renderCamera);
 
-    std::multimap<float, std::shared_ptr<Model>> getModelsByDistance();
+    std::multimap<float, std::shared_ptr<Model>>
+    getModelsByDistance(Camera *renderCamera);
 
     void draw();
-    void drawModel(Model *model, Shader *shader, glm::mat4 &projectionMatrix,
-                   glm::mat4 &viewMatrix);
+    void draw(Camera *renderCamera);
+    void drawModel(Camera *renderCamera, Model *model, Shader *shader,
+                   glm::mat4 &projectionMatrix, glm::mat4 &viewMatrix);
 };

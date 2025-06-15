@@ -1,4 +1,5 @@
 #include "glm/fwd.hpp"
+#include "glm/geometric.hpp"
 #include <core/interface/window.hpp>
 
 #include <core/base/camera.hpp>
@@ -35,6 +36,8 @@ int main() {
         "assets/shaders/highlight.vert", "assets/shaders/solid.frag");
     std::shared_ptr<Shader> standardShader = std::make_shared<Shader>(
         "assets/shaders/standard.vert", "assets/shaders/standard.frag");
+    std::shared_ptr<Shader> mirrorShader = std::make_shared<Shader>(
+        "assets/shaders/standard.vert", "assets/shaders/mirror.frag");
 
     scene->borderShader = borderShader;
 
@@ -53,11 +56,11 @@ int main() {
 
     std::shared_ptr<Model> table = std::make_shared<Model>(
         "assets/models/table/SM_OfficeTable.gltf", standardShader);
-    table->transform.position.z = -2.0f;
+    table->transform.position = glm::vec3(-8.0f, 0.05f, 2.0f);
 
     std::shared_ptr<Model> refrigerator = std::make_shared<Model>(
         "assets/models/refrigerator/SM_Refrigerator.gltf", standardShader);
-    refrigerator->transform.position.z = 4.0f;
+    refrigerator->transform.position = glm::vec3(2.0f, 0.1f, 4.0f);
 
     std::shared_ptr<Model> plainWall = std::make_shared<Model>(
         "assets/models/wall/SM_Wall_Plain.gltf", standardShader);
@@ -83,6 +86,14 @@ int main() {
     basicWindow->transform.position.x = -2.0f;
     basicWindow->transform.position.z = -1.0f;
 
+    std::shared_ptr<Model> mirror = std::make_shared<Model>(
+        "assets/models/wall/SM_Wall_Asphalt.gltf", mirrorShader);
+    mirror->transform.position = glm::vec3(2.5f, 2.0f, -2.5f);
+    mirror->transform.scale = glm::vec3(0.2f);
+    mirror->transform.rotation.z = 180.0f;
+
+    Camera mirrorCamera;
+
     scene->models.push_back(table);
     scene->models.push_back(refrigerator);
     scene->models.push_back(plainWall);
@@ -90,6 +101,7 @@ int main() {
     scene->models.push_back(tiledWall);
     scene->models.push_back(lamppost);
     scene->models.push_back(basicWindow);
+    scene->models.push_back(mirror);
 
     std::shared_ptr<Environment> skybox =
         std::make_shared<Environment>("assets/models/skybox");
@@ -109,25 +121,33 @@ int main() {
         window.update();
         processInput(window, scene);
 
+        renderToTexture.texture.use(10, mirrorShader.get(), "material.mirror");
+
+        mirrorCamera.location = mirror->transform.position;
+        glm::vec3 cameraToMirror =
+            mirror->transform.position - scene->camera.location;
+        glm::vec3 mirrorForward{0.0f, 0.0f, 1.0f};
+        mirrorCamera.updateCameraVectorsFromForwardVector(
+            cameraToMirror -
+            2.0f * glm::dot(mirrorForward, cameraToMirror) * mirrorForward);
+
         renderToTexture.bind();
         glViewport(0, 0, 1280, 720); // Set viewport to match texture size
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear with a visible color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
                 GL_STENCIL_BUFFER_BIT);
-        scene->draw();
+
+        mirror->visible = false;
+        scene->draw(&mirrorCamera);
 
         renderToTexture.unbind();
         int width, height;
         glfwGetFramebufferSize(window.glfwWindow, &width, &height);
         glViewport(0, 0, width, height);
-        glClearColor(0.0, 0.0, 0.0, 1.0); // Black background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
                 GL_STENCIL_BUFFER_BIT);
 
-        renderToTextureShader.use();
-        renderToTexture.texture.use(0, &renderToTextureShader,
-                                    "material.baseColor");
-        screenQuad.draw();
+        mirror->visible = true;
+        scene->draw();
 
         glfwSwapBuffers(window.glfwWindow);
         glfwPollEvents();

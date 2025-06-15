@@ -22,6 +22,7 @@ class Camera {
     float pitch;
     float yaw;
 
+    void updateCameraVectorsFromForwardVector(glm::vec3 forwardVector);
     void updateCameraVectors();
 
     Camera(glm::vec3 transform = DEFAULT_TRANSFORM,

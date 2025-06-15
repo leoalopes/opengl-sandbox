@@ -17,6 +17,7 @@ class Model {
 
     float borderSize = 0.0f;
     glm::vec3 borderColor;
+    bool visible = true;
 
     Model(std::string path, std::shared_ptr<Shader> shader)
         : path(PROJECT_DIRECTORY + path), shader(shader) {
