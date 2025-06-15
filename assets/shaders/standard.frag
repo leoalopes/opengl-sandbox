@@ -63,6 +63,8 @@ uniform SpotLight spotLights[4];
 
 uniform Material material;
 
+uniform samplerCube environment;
+
 out vec4 FragColor;
 
 vec3 calculateDirectionalLight(
@@ -95,22 +97,20 @@ vec3 calculateSpotLight(
 );
 
 void main() {
-    vec4 textureColor = texture(material.baseColor, TexCoords);
-    if (textureColor.a < 0.1) {
-        // discard;
-    }
+    vec3 normal = normalize(Normal);
+    vec3 toTheCamera = normalize(cameraPosition - Position);
 
-    vec3 diffuseColor = vec3(textureColor);
     vec3 metallicRoughness = vec3(texture(material.metallicRoughness, TexCoords));
-
     float metalness = metallicRoughness.b;
     float roughness = metallicRoughness.g;
-    vec3 specularColor = metalness > 0.5 ? vec3(1.0) : diffuseColor;
-    specularColor *= (1 - roughness);
+    vec3 specularColor = vec3(1.0) * (1 - roughness);
+    vec4 textureColor = texture(material.baseColor, TexCoords);
 
-    vec3 toTheCamera = normalize(cameraPosition - Position);
-    vec3 normal = normalize(Normal);
+    vec3 refractionDirection = refract(-toTheCamera, normal, 1 - roughness);
+    vec3 reflectionDirection = reflect(refractionDirection, normal);
+    vec4 environmentReflection = texture(environment, reflectionDirection);
 
+    vec3 diffuseColor = vec3(textureColor) * (1 - metalness) + metalness * vec3(environmentReflection);
     vec3 radiance = vec3(0.0);
     radiance += calculateDirectionalLight(
         toTheCamera,

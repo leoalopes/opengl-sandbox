@@ -71,7 +71,7 @@ void Environment::draw(glm::mat4 view, glm::mat4 projection) {
 
     glBindVertexArray(VAO);
 
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE0 + 7);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->textureId);
 
     glm::mat4 viewWithoutTranslation = glm::mat4(glm::mat3(view));
@@ -79,7 +79,7 @@ void Environment::draw(glm::mat4 view, glm::mat4 projection) {
     this->shader.use();
     this->shader.setMatrix("view", glm::value_ptr(viewWithoutTranslation));
     this->shader.setMatrix("projection", glm::value_ptr(projection));
-    this->shader.setInt("skybox", 0);
+    this->shader.setInt("skybox", 7);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 

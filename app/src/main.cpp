@@ -1,5 +1,4 @@
 #include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
 #include <core/interface/window.hpp>
 
 #include <core/base/camera.hpp>
@@ -87,10 +86,8 @@ int main() {
     basicWindow->transform.position.z = -1.0f;
 
     std::shared_ptr<Model> mirror = std::make_shared<Model>(
-        "assets/models/wall/SM_Wall_Asphalt.gltf", mirrorShader);
+        "assets/models/mirror/scene.gltf", standardShader);
     mirror->transform.position = glm::vec3(2.5f, 2.0f, -2.5f);
-    mirror->transform.scale = glm::vec3(0.2f);
-    mirror->transform.rotation.z = 180.0f;
 
     Camera mirrorCamera;
 
@@ -107,46 +104,12 @@ int main() {
         std::make_shared<Environment>("assets/models/skybox");
     scene->environment = skybox;
 
-    TextureRenderer renderToTexture{720, 1280};
-    ObjectBuffer screenQuad{
-        {{{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-         {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-         {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-         {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}}},
-        {0, 1, 2, 2, 3, 0}};
-    Shader renderToTextureShader{"assets/shaders/identity.vert",
-                                 "assets/shaders/kernel.frag"};
-
     while (!glfwWindowShouldClose(window.glfwWindow)) {
         window.update();
         processInput(window, scene);
 
-        renderToTexture.texture.use(10, mirrorShader.get(), "material.mirror");
-
-        mirrorCamera.location = mirror->transform.position;
-        glm::vec3 cameraToMirror =
-            mirror->transform.position - scene->camera.location;
-        glm::vec3 mirrorForward{0.0f, 0.0f, 1.0f};
-        mirrorCamera.updateCameraVectorsFromForwardVector(
-            cameraToMirror -
-            2.0f * glm::dot(mirrorForward, cameraToMirror) * mirrorForward);
-
-        renderToTexture.bind();
-        glViewport(0, 0, 1280, 720); // Set viewport to match texture size
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
                 GL_STENCIL_BUFFER_BIT);
-
-        mirror->visible = false;
-        scene->draw(&mirrorCamera);
-
-        renderToTexture.unbind();
-        int width, height;
-        glfwGetFramebufferSize(window.glfwWindow, &width, &height);
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-                GL_STENCIL_BUFFER_BIT);
-
-        mirror->visible = true;
         scene->draw();
 
         glfwSwapBuffers(window.glfwWindow);

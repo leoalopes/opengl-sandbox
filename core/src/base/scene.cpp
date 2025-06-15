@@ -123,5 +123,7 @@ void Scene::drawModel(Camera *renderCamera, Model *model, Shader *shader,
     shader->setMatrix("projection", glm::value_ptr(projectionMatrix));
     shader->setMatrix("view", glm::value_ptr(viewMatrix));
 
+    shader->setInt("environment", 7);
+
     model->draw(shader);
 }
