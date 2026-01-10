@@ -10,5 +10,5 @@ class Transform {
 
     Transform();
 
-    glm::mat4 getMatrix();
+    glm::mat4 getMatrix(glm::vec3 positionOffset = glm::vec3(0.0f));
 };

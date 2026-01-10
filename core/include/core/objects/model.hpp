@@ -1,38 +1,29 @@
 #pragma once
 
-#include "core/base/transform.hpp"
 #include "core/graphics/shader.hpp"
-#include "core/graphics/texture.hpp"
-#include "core/objects/mesh.hpp"
+#include "core/objects/object.hpp"
 #include "glm/fwd.hpp"
 
 #include <memory>
 #include <string>
 #include <tiny_gltf/tiny_gltf.h>
 
-class Model {
+class Model : public Object {
   public:
-    Transform transform;
-    std::shared_ptr<Shader> shader;
-
-    float borderSize = 0.0f;
-    glm::vec3 borderColor;
-    bool visible = true;
-
     Model(std::string path, std::shared_ptr<Shader> shader)
-        : path(PROJECT_DIRECTORY + path), shader(shader) {
+        : path(PROJECT_DIRECTORY + path), Object(shader) {
         this->loadModel();
     };
-
-    void draw();
-    void draw(Shader *overrideShader);
 
   private:
     std::string path;
     tinygltf::Model tgModel;
     tinygltf::TinyGLTF tgLoader;
-    std::map<unsigned int, Texture> textures;
-    std::vector<Mesh> meshes;
+    std::map<unsigned int, Texture2D> textures;
+
+    bool initializedBounds = false;
+    glm::vec3 minBounds;
+    glm::vec3 maxBounds;
 
     void loadModel();
 
@@ -40,4 +31,6 @@ class Model {
     void processNode(const tinygltf::Node &node,
                      glm::mat4 parentTransform = {1.0f});
     void processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform);
+
+    void updateBounds(const float *positions, size_t vertexCount);
 };

@@ -31,6 +31,21 @@ void Model::loadModel() {
     for (int nodeIndex : rootScene.nodes) {
         this->processNode(tgModel.nodes[nodeIndex]);
     }
+
+    if (this->initializedBounds) {
+        std::cout << "Setting object centerPoint." << '\n';
+        std::cout << "Min bounds: (" << minBounds.x << ", " << minBounds.y
+                  << ", " << minBounds.z << ")" << '\n';
+        std::cout << "Max bounds: (" << maxBounds.x << ", " << maxBounds.y
+                  << ", " << maxBounds.z << ")" << '\n';
+
+        this->centerPoint = (minBounds + maxBounds) * 0.5f;
+        std::cout << "Center point: (" << centerPoint.x << ", " << centerPoint.y
+                  << ", " << centerPoint.z << ")" << '\n';
+    } else {
+        std::cout << "Warning! Bounds were not initialized for this object"
+                  << '\n';
+    }
 }
 
 void Model::processTexture(const tinygltf::Texture &texture, int index) {
@@ -255,37 +270,43 @@ void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
             meshInstance.setNormalTexture(&this->textures.at(normalTexture));
         }
 
+        if (indexAccessor.count > 0) {
+            this->updateBounds(positions, indexAccessor.count);
+        }
+
         this->meshes.push_back(meshInstance);
         std::cout << "Added mesh " << mesh.name << '\n';
     }
 }
 
-void Model::draw() { this->draw(this->shader.get()); }
+void Model::updateBounds(const float *positions, size_t vertexCount) {
+    if (!this->initializedBounds) {
+        this->minBounds = {positions[0], positions[1], positions[2]};
+        this->maxBounds = {positions[0], positions[1], positions[2]};
+        this->initializedBounds = true;
+    }
 
-void Model::draw(Shader *overrideShader) {
-    for (unsigned int i = 0; i < this->meshes.size(); i++) {
-        Mesh mesh = this->meshes[i];
-
-        mesh.getBaseColor()->use(0, overrideShader, "material.baseColor");
-        mesh.getMetallicRoughness()->use(1, overrideShader,
-                                         "material.metallicRoughness");
-
-        Texture *emissiveTexture = mesh.getEmissiveColor();
-        if (emissiveTexture != nullptr) {
-            emissiveTexture->use(2, overrideShader, "material.emissiveColor");
+    for (size_t i = 0; i < vertexCount; i++) {
+        glm::vec3 position{positions[i * 3], positions[i * 3 + 1],
+                           positions[i * 3 + 2]};
+        if (position.x < minBounds.x) {
+            minBounds.x = position.x;
         }
-        overrideShader->setInt("material.hasEmissiveColor",
-                               emissiveTexture != nullptr);
-
-        Texture *normalTexture = mesh.getNormalTexture();
-        if (normalTexture != nullptr) {
-            normalTexture->use(3, overrideShader, "material.normalTexture");
+        if (position.y < minBounds.y) {
+            minBounds.y = position.y;
         }
-        overrideShader->setInt("material.hasNormalTexture",
-                               normalTexture != nullptr);
+        if (position.z < minBounds.z) {
+            minBounds.z = position.z;
+        }
 
-        overrideShader->setFloat("material.shininess", 64.0f);
-
-        mesh.draw(overrideShader, this->transform.getMatrix());
+        if (position.x > maxBounds.x) {
+            maxBounds.x = position.x;
+        }
+        if (position.y > maxBounds.y) {
+            maxBounds.y = position.y;
+        }
+        if (position.z > maxBounds.z) {
+            maxBounds.z = position.z;
+        }
     }
 }

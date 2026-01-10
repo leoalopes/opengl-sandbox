@@ -14,6 +14,7 @@ class GraphicalInterface {
     bool showPerformanceOverlay = true;
 
     GraphicalInterface(Scene *scene) : scene(scene) {};
+    ~GraphicalInterface() { this->shutdown(); };
 
     void initialize(GLFWwindow *window);
     void shutdown();

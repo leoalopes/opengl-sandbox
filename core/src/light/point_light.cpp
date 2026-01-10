@@ -1,6 +1,5 @@
 #include "core/light/point_light.hpp"
 
-#include "core/base/common.hpp"
 #include "core/interface/window.hpp"
 
 #include <glm/ext/matrix_transform.hpp>

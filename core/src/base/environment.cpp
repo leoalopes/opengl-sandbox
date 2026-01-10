@@ -1,15 +1,12 @@
 #include "core/base/environment.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 #include <stb/stb_image.h>
 
-Environment::Environment(std::string basePath)
-    : basePath(PROJECT_DIRECTORY + basePath),
-      shader("assets/shaders/environment.vert",
-             "assets/shaders/environment.frag") {
+Environment::Environment(std::array<std::string, 6> paths)
+    : texture(paths), shader("assets/shaders/environment.vert",
+                             "assets/shaders/environment.frag") {
     this->setupBuffer();
-    this->setupTexture();
 }
 
 void Environment::setupBuffer() {
@@ -29,42 +26,6 @@ void Environment::setupBuffer() {
                           (void *)0);
 }
 
-void Environment::setupTexture() {
-    glGenTextures(1, &this->textureId);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, this->textureId);
-
-    this->setupTextureFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, "front.jpg");
-    this->setupTextureFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, "back.jpg");
-
-    this->setupTextureFace(GL_TEXTURE_CUBE_MAP_POSITIVE_X, "right.jpg");
-    this->setupTextureFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, "left.jpg");
-
-    this->setupTextureFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, "top.jpg");
-    this->setupTextureFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, "bottom.jpg");
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-}
-
-void Environment::setupTextureFace(GLenum face, std::string facePath) {
-    std::string filePath = this->basePath + "/" + facePath;
-    int width, height, nrChannels;
-    unsigned char *data =
-        stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(face, 0, GL_RGB, width, height, 0, GL_RGB,
-                     GL_UNSIGNED_BYTE, data);
-    } else {
-        std::cout << "Failed to load skybox face texture" << '\n';
-    }
-    stbi_image_free(data);
-}
-
 void Environment::draw(glm::mat4 view, glm::mat4 projection) {
     glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_FALSE);
@@ -72,7 +33,7 @@ void Environment::draw(glm::mat4 view, glm::mat4 projection) {
     glBindVertexArray(VAO);
 
     glActiveTexture(GL_TEXTURE0 + 7);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, this->textureId);
+    this->texture.bind();
 
     glm::mat4 viewWithoutTranslation = glm::mat4(glm::mat3(view));
 

@@ -38,8 +38,10 @@ void Window::terminate() {
 }
 
 Scene *Window::createScene() {
-    this->scene =
-        std::make_unique<Scene>(this->screenWidth, this->screenHeight);
+    std::shared_ptr<Shader> postProcessingShader = std::make_shared<Shader>(
+        "assets/shaders/identity.vert", "assets/shaders/kernel.frag");
+    this->scene = std::make_unique<Scene>(this->screenWidth, this->screenHeight,
+                                          postProcessingShader);
     return this->scene.get();
 }
 

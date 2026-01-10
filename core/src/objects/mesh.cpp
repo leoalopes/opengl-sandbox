@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 
 #include "core/objects/mesh.hpp"
+#include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
 #include <cstddef>
@@ -9,7 +10,7 @@
 Mesh::Mesh(glm::mat4 transform, const float *positions, const float *normals,
            const float *texCoords, size_t vertexCount,
            std::vector<unsigned int> indices, size_t indexCount,
-           Texture *baseColor, Texture *metallicRoughness,
+           Texture2D *baseColor, Texture2D *metallicRoughness,
            glm::vec2 materialOffset, glm::vec2 materialScale)
     : transform(transform), buffer({}, {}), baseColor(baseColor),
       metallicRoughness(metallicRoughness) {

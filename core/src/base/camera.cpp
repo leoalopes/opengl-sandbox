@@ -12,10 +12,11 @@ Camera::Camera(glm::vec3 location, glm::vec3 worldUp, float fov)
     this->yaw = -90.0f;
 }
 
-void Camera::updateCameraVectorsFromForwardVector(glm::vec3 forwardVector) {
+void Camera::updateCameraVectorsFromForwardVector(glm::vec3 forwardVector,
+                                                  glm::vec3 worldUpVector) {
     this->forwardVector = glm::normalize(forwardVector);
     this->rightVector =
-        glm::normalize(glm::cross(this->forwardVector, this->worldUp));
+        glm::normalize(glm::cross(this->forwardVector, worldUpVector));
     this->upVector =
         glm::normalize(glm::cross(this->rightVector, this->forwardVector));
 }

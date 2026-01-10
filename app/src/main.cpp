@@ -1,19 +1,24 @@
-#include "glm/fwd.hpp"
 #include <core/interface/window.hpp>
 
 #include <core/base/camera.hpp>
 #include <core/base/scene.hpp>
 #include <core/graphics/shader.hpp>
 #include <core/graphics/texture.hpp>
+#include <core/objects/cube_primitive.hpp>
 #include <core/objects/model.hpp>
 #include <core/objects/object_buffer.hpp>
+#include <core/objects/sphere_primitive.hpp>
 #include <core/objects/texture_renderer.hpp>
 
 #include <GLFW/glfw3.h>
+#include <array>
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
+
+#include "ui/graphical_interface.hpp"
 
 void processInput(Window &window, Scene *scene);
 
@@ -25,8 +30,10 @@ int main() {
 
     Scene *scene = window.createScene();
 
+    GraphicalInterface gui{scene};
+    gui.initialize(window.glfwWindow);
+
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -37,6 +44,8 @@ int main() {
         "assets/shaders/standard.vert", "assets/shaders/standard.frag");
     std::shared_ptr<Shader> mirrorShader = std::make_shared<Shader>(
         "assets/shaders/standard.vert", "assets/shaders/mirror.frag");
+    std::shared_ptr<Shader> solidShader = std::make_shared<Shader>(
+        "assets/shaders/standard.vert", "assets/shaders/solid.frag");
 
     scene->borderShader = borderShader;
 
@@ -59,7 +68,8 @@ int main() {
 
     std::shared_ptr<Model> refrigerator = std::make_shared<Model>(
         "assets/models/refrigerator/SM_Refrigerator.gltf", standardShader);
-    refrigerator->transform.position = glm::vec3(2.0f, 0.1f, 4.0f);
+    refrigerator->transform.position = glm::vec3(2.0f, 0.1f, 4.5f);
+    refrigerator->setupDynamicEnvironmentMap();
 
     std::shared_ptr<Model> plainWall = std::make_shared<Model>(
         "assets/models/wall/SM_Wall_Plain.gltf", standardShader);
@@ -78,7 +88,7 @@ int main() {
 
     std::shared_ptr<Model> lamppost = std::make_shared<Model>(
         "assets/models/lamppost/scene.gltf", standardShader);
-    lamppost->transform.position = glm::vec3(-0.5f, 0.1f, 0.5f);
+    lamppost->transform.position = glm::vec3(5.0f, 0.1f, 4.5f);
 
     std::shared_ptr<Model> basicWindow = std::make_shared<Model>(
         "assets/models/window/scene.gltf", standardShader);
@@ -87,30 +97,50 @@ int main() {
 
     std::shared_ptr<Model> mirror = std::make_shared<Model>(
         "assets/models/mirror/scene.gltf", standardShader);
-    mirror->transform.position = glm::vec3(2.5f, 2.0f, -2.5f);
+    mirror->transform.position = glm::vec3(2.5f, 1.0f, -2.5f);
+    mirror->setupDynamicEnvironmentMap();
+
+    std::shared_ptr<Texture2D> cubeTexture;
+    std::shared_ptr<CubePrimitive> cube =
+        std::make_shared<CubePrimitive>(mirrorShader, cubeTexture);
+    cube->setupDynamicEnvironmentMap();
+    cube->transform.position = glm::vec3(2.5f, 2.0f, 2.5f);
+
+    std::shared_ptr<Texture2D> sphereTexture;
+    std::shared_ptr<SpherePrimitive> sphere =
+        std::make_shared<SpherePrimitive>(mirrorShader, sphereTexture);
+    sphere->setupDynamicEnvironmentMap();
+    sphere->transform.position = glm::vec3(2.5f, 2.0f, 2.5f);
 
     Camera mirrorCamera;
 
-    scene->models.push_back(table);
-    scene->models.push_back(refrigerator);
-    scene->models.push_back(plainWall);
-    scene->models.push_back(asphaltWall);
-    scene->models.push_back(tiledWall);
-    scene->models.push_back(lamppost);
-    scene->models.push_back(basicWindow);
-    scene->models.push_back(mirror);
+    scene->objects.push_back(table);
+    scene->objects.push_back(refrigerator);
+    scene->objects.push_back(plainWall);
+    scene->objects.push_back(asphaltWall);
+    scene->objects.push_back(tiledWall);
+    scene->objects.push_back(lamppost);
+    scene->objects.push_back(basicWindow);
+    scene->objects.push_back(mirror);
+    scene->objects.push_back(sphere);
 
+    std::array<std::string, 6> skyboxPaths{
+        "assets/models/skybox/right.jpg", "assets/models/skybox/left.jpg",
+        "assets/models/skybox/top.jpg",   "assets/models/skybox/bottom.jpg",
+        "assets/models/skybox/front.jpg", "assets/models/skybox/back.jpg",
+    };
     std::shared_ptr<Environment> skybox =
-        std::make_shared<Environment>("assets/models/skybox");
+        std::make_shared<Environment>(skyboxPaths);
     scene->environment = skybox;
 
     while (!glfwWindowShouldClose(window.glfwWindow)) {
         window.update();
         processInput(window, scene);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-                GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene->draw();
+
+        gui.draw();
 
         glfwSwapBuffers(window.glfwWindow);
         glfwPollEvents();
