@@ -1,14 +1,11 @@
 #pragma once
 
 #include "core/light/light.hpp"
-#include "core/objects/point_primitive.hpp"
 
 #include <memory>
 
 class DirectionalLight : public Light {
   public:
-    PointPrimitive debugRenderer;
-
     glm::vec3 ambient;
     glm::vec3 direction;
 
@@ -17,5 +14,5 @@ class DirectionalLight : public Light {
 
     void updateShader(std::string prefix, Shader *shader) override;
 
-    void debugDraw();
+    void debugDraw() override;
 };

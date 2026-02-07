@@ -1,12 +1,11 @@
 #pragma once
 
 #include "core/light/light.hpp"
-#include "core/objects/point_primitive.hpp"
+
 #include <memory>
 
 class PointLight : public Light {
   public:
-    PointPrimitive debugRenderer;
     glm::vec3 position;
 
     float constant;
@@ -19,5 +18,5 @@ class PointLight : public Light {
 
     void updateShader(std::string prefix, Shader *shader) override;
 
-    void debugDraw();
+    void debugDraw() override;
 };

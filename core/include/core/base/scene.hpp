@@ -49,7 +49,7 @@ class Scene {
 
     Scene(unsigned int screenWidth, unsigned int screenHeight,
           std::shared_ptr<Shader> postProcessingShader,
-          std::shared_ptr<Shader> directionalLightShader);
+          std::shared_ptr<Shader> lightDebugShader);
 
     std::multimap<float, std::shared_ptr<Object>>
     getObjectsByDistance(Camera *renderCamera);

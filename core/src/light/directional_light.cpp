@@ -4,8 +4,8 @@
 DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec3 ambient,
                                    glm::vec3 diffuse, glm::vec3 specular,
                                    std::shared_ptr<Shader> debugShader)
-    : Light(diffuse, specular), ambient(ambient), direction(direction),
-      debugRenderer(debugShader) {
+    : Light(debugShader, diffuse, specular), ambient(ambient),
+      direction(direction) {
     debugRenderer.size = 300.0f;
 }
 

@@ -9,14 +9,15 @@
 
 Scene::Scene(unsigned int screenWidth, unsigned int screenHeight,
              std::shared_ptr<Shader> postProcessingShader,
-             std::shared_ptr<Shader> directionalLightShader)
+             std::shared_ptr<Shader> lightDebugShader)
     : screenWidth(screenWidth), screenHeight(screenHeight),
       directionalLight(DEFAULT_DL_DIRECTION, DEFAULT_DL_AMBIENT,
                        DEFAULT_DL_DIFFUSE, DEFAULT_DL_SPECULAR,
-                       directionalLightShader),
+                       lightDebugShader),
       flashlight(glm::vec3(0.0f), glm::vec3(0.0f),
                  glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(20.0f)),
-                 glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f),
+                 glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f,
+                 lightDebugShader),
       sceneTexture(std::make_shared<Texture2D>(
           screenWidth, screenHeight, GL_RGBA, GL_CLAMP_TO_EDGE,
           GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR)),
@@ -83,6 +84,9 @@ void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
     if (this->debugLights && renderCamera == &this->camera) {
         for (size_t i = 0; i < this->pointLights.size(); i++) {
             this->pointLights.at(i)->debugDraw();
+        }
+        for (size_t i = 0; i < this->spotLights.size(); i++) {
+            this->spotLights.at(i)->debugDraw();
         }
         this->directionalLight.debugDraw();
     }

@@ -2,10 +2,11 @@
 
 SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, float cutOff,
                      float outerCutOff, glm::vec3 diffuse, glm::vec3 specular,
-                     float constant, float linear, float quadratic)
-    : Light(diffuse, specular), position(position), direction(direction),
-      cutOff(cutOff), outerCutOff(outerCutOff), constant(constant),
-      linear(linear), quadratic(quadratic) {}
+                     float constant, float linear, float quadratic,
+                     std::shared_ptr<Shader> debugShader)
+    : Light(debugShader, diffuse, specular), position(position),
+      direction(direction), cutOff(cutOff), outerCutOff(outerCutOff),
+      constant(constant), linear(linear), quadratic(quadratic) {}
 
 void SpotLight::updateShader(std::string prefix, Shader *shader) {
     Light::updateShader(prefix, shader);
@@ -19,4 +20,9 @@ void SpotLight::updateShader(std::string prefix, Shader *shader) {
     shader->setFloat(prefix + ".constant", constant);
     shader->setFloat(prefix + ".linear", linear);
     shader->setFloat(prefix + ".quadratic", quadratic);
+}
+
+void SpotLight::debugDraw() {
+    this->debugRenderer.color = this->diffuse * 2.0f;
+    this->debugRenderer.draw(this->position);
 }

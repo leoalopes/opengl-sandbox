@@ -149,6 +149,84 @@ void GraphicalInterface::drawSceneController() {
             }
             ImGui::Unindent();
         }
+
+        if (ImGui::CollapsingHeader("Spot lights",
+                                    ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::Indent();
+            for (size_t i = 0; i < this->scene->spotLights.size(); i++) {
+                std::string lightName = std::to_string(i + 1);
+                if (ImGui::CollapsingHeader(lightName.c_str(),
+                                            ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::SeparatorText("Color");
+
+                    ImGui::Text("Diffuse ");
+                    ImGui::SameLine();
+                    ImGui::ColorEdit3(
+                        ("##sl_" + lightName + "_diffuse").c_str(),
+                        &this->scene->spotLights[i]->diffuse.x);
+
+                    ImGui::Text("Specular");
+                    ImGui::SameLine();
+                    ImGui::ColorEdit3(
+                        ("##sl_" + lightName + "_specular").c_str(),
+                        &this->scene->spotLights[i]->specular.x);
+                    ImGui::Spacing();
+
+                    ImGui::SeparatorText("Position");
+
+                    ImGui::Text("X");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100.0f);
+                    ImGui::DragFloat(("##sl_" + lightName + "_pos_x").c_str(),
+                                     &this->scene->spotLights[i]->position.x,
+                                     0.1f);
+
+                    ImGui::SameLine();
+                    ImGui::Text("Y");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100.0f);
+                    ImGui::DragFloat(("##sl_" + lightName + "_pos_y").c_str(),
+                                     &this->scene->spotLights[i]->position.y,
+                                     0.1f);
+
+                    ImGui::SameLine();
+                    ImGui::Text("Z");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100.0f);
+                    ImGui::DragFloat(("##sl_" + lightName + "_pos_z").c_str(),
+                                     &this->scene->spotLights[i]->position.z,
+                                     0.1f);
+                    ImGui::Spacing();
+
+                    ImGui::SeparatorText("Direction");
+
+                    ImGui::Text("X");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100.0f);
+                    ImGui::DragFloat(("##sl_" + lightName + "_dir_x").c_str(),
+                                     &this->scene->spotLights[i]->direction.x,
+                                     0.1f, -1.0f, 1.0f, "%.2f");
+
+                    ImGui::SameLine();
+                    ImGui::Text("Y");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100.0f);
+                    ImGui::DragFloat(("##sl_" + lightName + "_dir_y").c_str(),
+                                     &this->scene->spotLights[i]->direction.y,
+                                     0.1f, -1.0f, 1.0f, "%.2f");
+
+                    ImGui::SameLine();
+                    ImGui::Text("Z");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100.0f);
+                    ImGui::DragFloat(("##sl_" + lightName + "_dir_z").c_str(),
+                                     &this->scene->spotLights[i]->direction.z,
+                                     0.1f, -1.0f, 1.0f, "%.2f");
+                    ImGui::Spacing();
+                }
+            }
+            ImGui::Unindent();
+        }
     }
 
     ImGui::End();

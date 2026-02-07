@@ -6,8 +6,8 @@
 PointLight::PointLight(glm::vec3 position, glm::vec3 diffuse,
                        glm::vec3 specular, float constant, float linear,
                        float quadratic, std::shared_ptr<Shader> debugShader)
-    : Light(diffuse, specular), position(position), constant(constant),
-      linear(linear), quadratic(quadratic), debugRenderer(debugShader) {}
+    : Light(debugShader, diffuse, specular), position(position),
+      constant(constant), linear(linear), quadratic(quadratic) {}
 
 void PointLight::updateShader(std::string prefix, Shader *shader) {
     Light::updateShader(prefix, shader);

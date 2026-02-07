@@ -69,6 +69,11 @@ int main() {
     scene->pointLights.push_back(std::make_shared<PointLight>(
         glm::vec3(2.0f, 6.0f, -16.5f), glm::vec3(0.25f, 0.25f, 0.25f),
         glm::vec3(0.5f, 0.5f, 0.5f), 1.0f, 0.09f, 0.032f, lightShader));
+    scene->spotLights.push_back(std::make_shared<SpotLight>(
+        glm::vec3(-2.5f, 2.6f, 2.0f), glm::vec3(-0.4f, -1.0f, -0.4f),
+        glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(20.0f)),
+        glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f,
+        0.032f, lightShader));
 
     std::shared_ptr<Model> table = std::make_shared<Model>(
         "assets/models/table/SM_OfficeTable.gltf", standardShader);
