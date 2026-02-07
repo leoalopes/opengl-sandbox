@@ -61,12 +61,49 @@ Shader::Shader(const std::string vertexPath, const std::string fragmentPath) {
     if (!success) {
         char infoLog[512];
         glGetProgramInfoLog(this->programId, 512, NULL, infoLog);
+        std::cout << vertexPath << ", " << fragmentPath << '\n';
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
                   << infoLog << std::endl;
     }
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+Shader::Shader(const std::string vertexPath, const std::string fragmentPath, const std::string geometryPath) {
+    std::string vertexCode, fragmentCode, geometryCode;
+    try {
+        vertexCode = readFile(vertexPath);
+        fragmentCode = readFile(fragmentPath);
+        geometryCode = readFile(geometryPath);
+    } catch (std::ifstream::failure e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+
+    unsigned int vertexShader = compileShader(GL_VERTEX_SHADER, vertexCode);
+    unsigned int fragmentShader =
+        compileShader(GL_FRAGMENT_SHADER, fragmentCode);
+    unsigned int geometryShader = compileShader(GL_GEOMETRY_SHADER, geometryCode);
+
+    this->programId = glCreateProgram();
+    glAttachShader(this->programId, vertexShader);
+    glAttachShader(this->programId, fragmentShader);
+    glAttachShader(this->programId, geometryShader);
+    glLinkProgram(this->programId);
+
+    int success;
+    glGetProgramiv(this->programId, GL_LINK_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(this->programId, 512, NULL, infoLog);
+        std::cout << vertexPath << ", " << fragmentPath << ", " << geometryPath << '\n';
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
+                  << infoLog << std::endl;
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    glDeleteShader(geometryShader);
 }
 
 void Shader::use() { glUseProgram(this->programId); }

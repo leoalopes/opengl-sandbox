@@ -1,4 +1,6 @@
 #include "core/objects/model.hpp"
+#include "core/graphics/texture_2d.hpp"
+#include "core/graphics/texture_3d.hpp"
 #include "glm/fwd.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -57,7 +59,7 @@ void Model::processTexture(const tinygltf::Texture &texture, int index) {
     std::vector<unsigned char> image = tgModel.images[texture.source].image;
     int width = tgModel.images[texture.source].width;
     int height = tgModel.images[texture.source].height;
-    this->textures.insert({index, {image, width, height}});
+    this->textures.insert({index, {image, width, height, GL_SRGB_ALPHA}});
 }
 
 void Model::processNode(const tinygltf::Node &node, glm::mat4 parentTransform) {

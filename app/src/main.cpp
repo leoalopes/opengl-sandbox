@@ -29,12 +29,14 @@ int main() {
     window.initialize();
 
     Scene *scene = window.createScene();
+    scene->renderToTexture = true;
 
     GraphicalInterface gui{scene};
     gui.initialize(window.glfwWindow);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -42,6 +44,9 @@ int main() {
         "assets/shaders/highlight.vert", "assets/shaders/solid.frag");
     std::shared_ptr<Shader> standardShader = std::make_shared<Shader>(
         "assets/shaders/standard.vert", "assets/shaders/standard.frag");
+    std::shared_ptr<Shader> explodingShader = std::make_shared<Shader>(
+        "assets/shaders/standard-with-geom.vert",
+        "assets/shaders/standard.frag", "assets/shaders/explode.geom");
     std::shared_ptr<Shader> mirrorShader = std::make_shared<Shader>(
         "assets/shaders/standard.vert", "assets/shaders/mirror.frag");
     std::shared_ptr<Shader> solidShader = std::make_shared<Shader>(
@@ -67,7 +72,7 @@ int main() {
     table->transform.position = glm::vec3(-8.0f, 0.05f, 2.0f);
 
     std::shared_ptr<Model> refrigerator = std::make_shared<Model>(
-        "assets/models/refrigerator/SM_Refrigerator.gltf", standardShader);
+        "assets/models/refrigerator/SM_Refrigerator.gltf", explodingShader);
     refrigerator->transform.position = glm::vec3(2.0f, 0.1f, 4.5f);
     refrigerator->setupDynamicEnvironmentMap();
 
@@ -95,17 +100,6 @@ int main() {
     basicWindow->transform.position.x = -2.0f;
     basicWindow->transform.position.z = -1.0f;
 
-    std::shared_ptr<Model> mirror = std::make_shared<Model>(
-        "assets/models/mirror/scene.gltf", standardShader);
-    mirror->transform.position = glm::vec3(2.5f, 1.0f, -2.5f);
-    mirror->setupDynamicEnvironmentMap();
-
-    std::shared_ptr<Texture2D> cubeTexture;
-    std::shared_ptr<CubePrimitive> cube =
-        std::make_shared<CubePrimitive>(mirrorShader, cubeTexture);
-    cube->setupDynamicEnvironmentMap();
-    cube->transform.position = glm::vec3(2.5f, 2.0f, 2.5f);
-
     std::shared_ptr<Texture2D> sphereTexture;
     std::shared_ptr<SpherePrimitive> sphere =
         std::make_shared<SpherePrimitive>(mirrorShader, sphereTexture);
@@ -121,7 +115,6 @@ int main() {
     scene->objects.push_back(tiledWall);
     scene->objects.push_back(lamppost);
     scene->objects.push_back(basicWindow);
-    scene->objects.push_back(mirror);
     scene->objects.push_back(sphere);
 
     std::array<std::string, 6> skyboxPaths{
@@ -134,6 +127,7 @@ int main() {
     scene->environment = skybox;
 
     while (!glfwWindowShouldClose(window.glfwWindow)) {
+        glfwPollEvents();
         window.update();
         processInput(window, scene);
 
@@ -143,7 +137,6 @@ int main() {
         gui.draw();
 
         glfwSwapBuffers(window.glfwWindow);
-        glfwPollEvents();
     }
 
     return 0;

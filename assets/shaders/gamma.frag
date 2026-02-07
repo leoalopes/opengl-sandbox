@@ -15,6 +15,10 @@ uniform Material material;
 out vec4 FragColor;
 
 void main() {
-    vec3 baseColor = vec3(texture(material.baseColor, geometryInput.TexCoords));
-    FragColor = vec4(baseColor, 1.0);
+    vec3 diffuseColor = vec3(texture(material.baseColor, geometryInput.TexCoords));
+
+    float gamma = 2.2;
+    diffuseColor = pow(diffuseColor, vec3(1.0/gamma));
+
+    FragColor = vec4(diffuseColor, 1.0);
 }

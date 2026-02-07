@@ -2,7 +2,7 @@
 #include <core/base/scene.hpp>
 
 #include <GLFW/glfw3.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 class GraphicalInterface {
   public:

@@ -8,15 +8,17 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out GeometryData {
+out VertexData {
     vec3 Position;
+    vec3 OriginalNormal;
     vec3 Normal;
     vec2 TexCoords;
-} geometryOutput;
+} vertexOutput;
 
 void main() {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-    geometryOutput.Position = vec3(model * vec4(aPos, 1.0));
-    geometryOutput.Normal = mat3(normalMatrix) * aNormal;
-    geometryOutput.TexCoords = aTexCoords;
+    gl_Position = vec4(aPos, 1.0);
+    vertexOutput.Position = vec3(model * vec4(aPos, 1.0));
+    vertexOutput.OriginalNormal = aNormal;
+    vertexOutput.Normal = mat3(normalMatrix) * aNormal;
+    vertexOutput.TexCoords = aTexCoords;
 }

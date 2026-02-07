@@ -2,6 +2,7 @@
 
 #include "core/base/camera.hpp"
 
+#include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
 #include <string>
@@ -34,21 +35,26 @@ Scene::getObjectsByDistance(Camera *renderCamera) {
 }
 
 void Scene::draw(int depth) {
+    if (this->renderToTexture) {
+        this->sceneRenderer.bind();
+    }
+
     glViewport(0, 0, screenWidth, screenHeight);
-    this->sceneRenderer.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     this->draw(&this->camera, screenWidth, screenHeight, depth);
-    this->sceneRenderer.unbind();
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
-    postProcessingShader->use();
-    fullscreenQuad.draw(postProcessingShader.get());
-    glEnable(GL_DEPTH_TEST);
+    if (this->renderToTexture) {
+        this->sceneRenderer.unbind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        postProcessingShader->use();
+        fullscreenQuad.draw(postProcessingShader.get());
+        glEnable(GL_DEPTH_TEST);
+    }
 }
 
 void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
+    float currentFrame = static_cast<float>(glfwGetTime());
     glm::mat4 projectionMatrix =
         glm::perspective(glm::radians(renderCamera->fov),
                          (float)width / (float)height, 0.1f, 100.0f);
@@ -69,7 +75,7 @@ void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
         flashlight.direction = renderCamera->forwardVector;
 
         this->drawObject(renderCamera, object.get(), object->shader.get(),
-                         projectionMatrix, viewMatrix, depth);
+                         projectionMatrix, viewMatrix, currentFrame, depth);
     }
 
     for (size_t i = 0; i < this->pointLights.size(); i++) {
@@ -79,7 +85,7 @@ void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
 
 void Scene::drawObject(Camera *renderCamera, Object *object, Shader *shader,
                        glm::mat4 projectionMatrix, glm::mat4 viewMatrix,
-                       int depth) {
+                       float time, int depth) {
     if (object->useDynamicEnvironmentMap && depth == 0) {
         bool originalFlashlightEnabled = flashlightEnabled;
         glm::vec3 originalFlashlightPosition = flashlight.position;
@@ -162,7 +168,11 @@ void Scene::drawObject(Camera *renderCamera, Object *object, Shader *shader,
         object->dynamicEnvironmentMapTextureTarget->bind();
 
         glViewport(0, 0, screenWidth, screenHeight);
-        this->sceneRenderer.bind();
+        if (this->renderToTexture) {
+            this->sceneRenderer.bind();
+        } else {
+            object->dynamicEnvironmentMapRenderer->unbind();
+        }
 
         flashlightEnabled = originalFlashlightEnabled;
         flashlight.position = originalFlashlightPosition;
@@ -202,6 +212,7 @@ void Scene::drawObject(Camera *renderCamera, Object *object, Shader *shader,
     shader->setMatrix("view", glm::value_ptr(viewMatrix));
 
     shader->setInt("environment", object->useDynamicEnvironmentMap ? 8 : 7);
+    shader->setFloat("time", time);
 
     object->draw(shader);
 }

@@ -10,6 +10,6 @@ target_link_libraries(core stb)
 target_link_libraries(core glad)
 target_link_libraries(core tiny_gltf)
 target_link_libraries(core OpenGL::GL)
-target_link_libraries(core ImGui::imgui)
+target_link_libraries(core imgui::imgui)
 
 target_include_directories(core PUBLIC ${CMAKE_SOURCE_DIR}/dependencies/glm)

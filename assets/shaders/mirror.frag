@@ -38,8 +38,11 @@ struct SpotLight {
     float quadratic;
 };
 
-in vec3 Position;
-in vec3 Normal;
+in GeometryData {
+    vec3 Position;
+    vec3 Normal;
+    vec2 TexCoords;
+} geometryInput;
 
 uniform vec3 cameraPosition;
 
@@ -87,8 +90,8 @@ vec3 calculateSpotLight(
 );
 
 void main() {
-    vec3 normal = normalize(Normal);
-    vec3 toTheCamera = normalize(cameraPosition - Position);
+    vec3 normal = normalize(geometryInput.Normal);
+    vec3 toTheCamera = normalize(cameraPosition - geometryInput.Position);
 
     vec3 reflectionDirection = reflect(-toTheCamera, normal);
     vec4 environmentColor = texture(environment, reflectionDirection);
@@ -109,7 +112,7 @@ void main() {
     for (int i = 0; i < nPointLights; i++) {
         radiance += calculatePointLight(
             toTheCamera,
-            Position,
+            geometryInput.Position,
             normal,
             diffuseColor,
             specularColor,
@@ -121,7 +124,7 @@ void main() {
     for (int i = 0; i < nSpotLights; i++) {
         radiance += calculateSpotLight(
             toTheCamera,
-            Position,
+            geometryInput.Position,
             normal,
             diffuseColor,
             specularColor,

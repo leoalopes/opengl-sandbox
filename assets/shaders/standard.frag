@@ -47,9 +47,11 @@ struct SpotLight {
     float quadratic;
 };
 
-in vec2 TexCoords;
-in vec3 Position;
-in vec3 Normal;
+in GeometryData {
+    vec3 Position;
+    vec3 Normal;
+    vec2 TexCoords;
+} geometryInput;
 
 uniform vec3 cameraPosition;
 
@@ -97,14 +99,14 @@ vec3 calculateSpotLight(
 );
 
 void main() {
-    vec3 normal = normalize(Normal);
-    vec3 toTheCamera = normalize(cameraPosition - Position);
+    vec3 normal = normalize(geometryInput.Normal);
+    vec3 toTheCamera = normalize(cameraPosition - geometryInput.Position);
 
-    vec3 metallicRoughness = vec3(texture(material.metallicRoughness, TexCoords));
+    vec3 metallicRoughness = vec3(texture(material.metallicRoughness, geometryInput.TexCoords));
     float metalness = metallicRoughness.b;
     float roughness = metallicRoughness.g;
     vec3 specularColor = vec3(1.0) * (1 - roughness);
-    vec4 textureColor = texture(material.baseColor, TexCoords);
+    vec4 textureColor = texture(material.baseColor, geometryInput.TexCoords);
 
     vec3 refractionDirection = refract(-toTheCamera, normal, 1 - roughness);
     vec3 reflectionDirection = reflect(refractionDirection, normal);
@@ -124,7 +126,7 @@ void main() {
     for (int i = 0; i < nPointLights; i++) {
         radiance += calculatePointLight(
             toTheCamera,
-            Position,
+            geometryInput.Position,
             normal,
             diffuseColor,
             specularColor,
@@ -136,7 +138,7 @@ void main() {
     for (int i = 0; i < nSpotLights; i++) {
         radiance += calculateSpotLight(
             toTheCamera,
-            Position,
+            geometryInput.Position,
             normal,
             diffuseColor,
             specularColor,
@@ -146,7 +148,7 @@ void main() {
     }
 
     if (material.hasEmissiveColor) {
-        vec3 emissiveColor = vec3(texture(material.emissiveColor, TexCoords));
+        vec3 emissiveColor = vec3(texture(material.emissiveColor, geometryInput.TexCoords));
         radiance += emissiveColor;
     }
 

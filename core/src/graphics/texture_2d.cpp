@@ -56,7 +56,7 @@ void Texture2D::setupTexture(unsigned char *textureData, int width, int height,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, textureMinFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, textureMagFilter);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, type,
+    glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, textureData);
     glGenerateMipmap(GL_TEXTURE_2D);
 }

@@ -4,8 +4,8 @@
 #include <stb/stb_image.h>
 
 Environment::Environment(std::array<std::string, 6> paths)
-    : texture(paths), shader("assets/shaders/environment.vert",
-                             "assets/shaders/environment.frag") {
+    : texture(paths, GL_SRGB), shader("assets/shaders/environment.vert",
+                                      "assets/shaders/environment.frag") {
     this->setupBuffer();
 }
 

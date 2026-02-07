@@ -4,7 +4,11 @@ struct Material {
     sampler2D baseColor;
 };
 
-in vec2 TexCoords;
+in GeometryData {
+    vec3 Position;
+    vec3 Normal;
+    vec2 TexCoords;
+} geometryInput;
 
 uniform Material material;
 
@@ -33,7 +37,7 @@ void main() {
 
     vec3 sampleTex[9];
     for(int i = 0; i < 9; i++) {
-        sampleTex[i] = vec3(texture(material.baseColor, TexCoords.st + offsets[i]));
+        sampleTex[i] = vec3(texture(material.baseColor, geometryInput.TexCoords.st + offsets[i]));
     }
     vec3 col = vec3(0.0);
     for(int i = 0; i < 9; i++)
