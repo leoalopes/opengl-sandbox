@@ -23,6 +23,7 @@ class Window {
     GLFWwindow *glfwWindow;
     CursorPosCallback cursorPosCallback = nullptr;
     FramebufferSizeCallback framebufferSizeCallback = nullptr;
+    bool inputEnabled = true;
 
     int screenWidth = 1920, screenHeight = 1080;
     float deltaTime, lastFrame;

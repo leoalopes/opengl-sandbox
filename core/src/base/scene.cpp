@@ -79,7 +79,7 @@ void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
     }
 
     for (size_t i = 0; i < this->pointLights.size(); i++) {
-        /*this->pointLights.at(i)->drawDebugBillboard();*/
+        this->pointLights.at(i)->drawDebugBillboard();
     }
 }
 

@@ -8,6 +8,7 @@ class GraphicalInterface {
   public:
     Scene *scene;
 
+    float toggleCooldown = 0;
     bool acceptEvents = false;
     bool showDemoWindow = false;
     bool showSceneController = false;

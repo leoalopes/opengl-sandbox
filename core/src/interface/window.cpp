@@ -51,30 +51,33 @@ void Window::update() {
     this->deltaTime = currentFrame - this->lastFrame;
     this->lastFrame = currentFrame;
 
-    glm::vec3 cameraTranslation{0.0f};
-    if (glfwGetKey(glfwWindow, GLFW_KEY_W) == GLFW_PRESS) {
-        cameraTranslation += this->scene->camera.forwardVector;
-    }
-    if (glfwGetKey(glfwWindow, GLFW_KEY_S) == GLFW_PRESS) {
-        cameraTranslation -= this->scene->camera.forwardVector;
-    }
-    if (glfwGetKey(glfwWindow, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraTranslation += this->scene->camera.rightVector;
-    }
-    if (glfwGetKey(glfwWindow, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraTranslation -= this->scene->camera.rightVector;
-    }
-    if (glfwGetKey(glfwWindow, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        cameraTranslation += this->scene->camera.upVector;
-    }
-    if (glfwGetKey(glfwWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        cameraTranslation -= this->scene->camera.upVector;
-    }
+    if (this->inputEnabled) {
+        glm::vec3 cameraTranslation{0.0f};
+        if (glfwGetKey(glfwWindow, GLFW_KEY_W) == GLFW_PRESS) {
+            cameraTranslation += this->scene->camera.forwardVector;
+        }
+        if (glfwGetKey(glfwWindow, GLFW_KEY_S) == GLFW_PRESS) {
+            cameraTranslation -= this->scene->camera.forwardVector;
+        }
+        if (glfwGetKey(glfwWindow, GLFW_KEY_D) == GLFW_PRESS) {
+            cameraTranslation += this->scene->camera.rightVector;
+        }
+        if (glfwGetKey(glfwWindow, GLFW_KEY_A) == GLFW_PRESS) {
+            cameraTranslation -= this->scene->camera.rightVector;
+        }
+        if (glfwGetKey(glfwWindow, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            cameraTranslation += this->scene->camera.upVector;
+        }
+        if (glfwGetKey(glfwWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+            cameraTranslation -= this->scene->camera.upVector;
+        }
 
-    float translationLength = glm::length(cameraTranslation);
-    if (translationLength > 0) {
-        this->scene->camera.location +=
-            (cameraTranslation / translationLength) * 5.0f * this->deltaTime;
+        float translationLength = glm::length(cameraTranslation);
+        if (translationLength > 0) {
+            this->scene->camera.location +=
+                (cameraTranslation / translationLength) * 5.0f *
+                this->deltaTime;
+        }
     }
 }
 
@@ -103,7 +106,7 @@ void Window::defaultCursorPosCallback(GLFWwindow *window, double xpos,
     windowInstance.mousePosition = newPosition;
 
     glm::vec2 cameraMouseOffset = windowInstance.mouseOffset * 0.1f;
-    if (windowInstance.scene) {
+    if (windowInstance.scene && windowInstance.inputEnabled) {
         windowInstance.scene->camera.updatePitchYaw(cameraMouseOffset.x,
                                                     cameraMouseOffset.y);
     }

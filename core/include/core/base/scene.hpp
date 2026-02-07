@@ -37,7 +37,8 @@ class Scene {
     std::vector<std::shared_ptr<SpotLight>> spotLights;
 
     SpotLight flashlight;
-    bool flashlightEnabled = true;
+    float flashlightToggleCooldown = 0;
+    bool flashlightEnabled = false;
     bool renderToTexture = false;
 
     std::vector<std::shared_ptr<Object>> objects;
@@ -53,6 +54,6 @@ class Scene {
     void draw(int depth = 0);
     void draw(Camera *renderCamera, int width, int height, int depth = 0);
     void drawObject(Camera *renderCamera, Object *object, Shader *shader,
-                    glm::mat4 projectionMatrix, glm::mat4 viewMatrix, float time,
-                    int depth = 0);
+                    glm::mat4 projectionMatrix, glm::mat4 viewMatrix,
+                    float time, int depth = 0);
 };

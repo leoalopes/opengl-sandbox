@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <core/interface/window.hpp>
 
 #include <core/base/camera.hpp>
@@ -20,7 +21,7 @@
 
 #include "ui/graphical_interface.hpp"
 
-void processInput(Window &window, Scene *scene);
+void processInput(Window &window, GraphicalInterface &gui, Scene *scene);
 
 int main() {
     freopen("execution_log.txt", "a", stdout);
@@ -36,7 +37,7 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-    // glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -74,7 +75,6 @@ int main() {
     std::shared_ptr<Model> refrigerator = std::make_shared<Model>(
         "assets/models/refrigerator/SM_Refrigerator.gltf", explodingShader);
     refrigerator->transform.position = glm::vec3(2.0f, 0.1f, 4.5f);
-    refrigerator->setupDynamicEnvironmentMap();
 
     std::shared_ptr<Model> plainWall = std::make_shared<Model>(
         "assets/models/wall/SM_Wall_Plain.gltf", standardShader);
@@ -90,10 +90,6 @@ int main() {
         "assets/models/wall/SM_Wall_Tiled.gltf", standardShader);
     tiledWall->transform.rotation.x = 90.0f;
     tiledWall->transform.position.x = -11.0f;
-
-    std::shared_ptr<Model> lamppost = std::make_shared<Model>(
-        "assets/models/lamppost/scene.gltf", standardShader);
-    lamppost->transform.position = glm::vec3(5.0f, 0.1f, 4.5f);
 
     std::shared_ptr<Model> basicWindow = std::make_shared<Model>(
         "assets/models/window/scene.gltf", standardShader);
@@ -113,7 +109,6 @@ int main() {
     scene->objects.push_back(plainWall);
     scene->objects.push_back(asphaltWall);
     scene->objects.push_back(tiledWall);
-    scene->objects.push_back(lamppost);
     scene->objects.push_back(basicWindow);
     scene->objects.push_back(sphere);
 
@@ -129,7 +124,12 @@ int main() {
     while (!glfwWindowShouldClose(window.glfwWindow)) {
         glfwPollEvents();
         window.update();
-        processInput(window, scene);
+
+        gui.toggleCooldown =
+            std::max(0.0f, gui.toggleCooldown - window.deltaTime);
+        scene->flashlightToggleCooldown =
+            std::max(0.0f, scene->flashlightToggleCooldown - window.deltaTime);
+        processInput(window, gui, scene);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene->draw();
@@ -142,10 +142,36 @@ int main() {
     return 0;
 }
 
-void processInput(Window &window, Scene *scene) {
+void processInput(Window &window, GraphicalInterface &gui, Scene *scene) {
     GLFWwindow *glfwWindow = window.glfwWindow;
 
     if (glfwGetKey(glfwWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(glfwWindow, true);
+    }
+
+    if (glfwGetKey(glfwWindow, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+        if (gui.toggleCooldown <= 0) {
+            gui.acceptEvents = !gui.showSceneController;
+            gui.showSceneController = !gui.showSceneController;
+            glfwSetInputMode(glfwWindow, GLFW_CURSOR,
+                             gui.showSceneController ? GLFW_CURSOR_NORMAL
+                                                     : GLFW_CURSOR_DISABLED);
+            gui.toggleCooldown = 0.5f;
+            window.inputEnabled = !gui.acceptEvents;
+        }
+    }
+
+    if (glfwGetKey(glfwWindow, GLFW_KEY_D) == GLFW_PRESS && gui.acceptEvents) {
+        if (gui.toggleCooldown <= 0) {
+            gui.showDemoWindow = !gui.showDemoWindow;
+            gui.toggleCooldown = 0.5f;
+        }
+    }
+
+    if (glfwGetKey(glfwWindow, GLFW_KEY_F) == GLFW_PRESS) {
+        if (scene->flashlightToggleCooldown <= 0) {
+            scene->flashlightEnabled = !scene->flashlightEnabled;
+            scene->flashlightToggleCooldown = 0.5f;
+        }
     }
 }
