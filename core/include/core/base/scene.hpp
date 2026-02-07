@@ -35,6 +35,8 @@ class Scene {
     DirectionalLight directionalLight;
     std::vector<std::shared_ptr<PointLight>> pointLights;
     std::vector<std::shared_ptr<SpotLight>> spotLights;
+    bool debugLights = 0;
+    float debugLightsToggleCooldown = 0;
 
     SpotLight flashlight;
     float flashlightToggleCooldown = 0;
@@ -46,7 +48,8 @@ class Scene {
     std::shared_ptr<Shader> borderShader;
 
     Scene(unsigned int screenWidth, unsigned int screenHeight,
-          std::shared_ptr<Shader> postProcessingShader);
+          std::shared_ptr<Shader> postProcessingShader,
+          std::shared_ptr<Shader> directionalLightShader);
 
     std::multimap<float, std::shared_ptr<Object>>
     getObjectsByDistance(Camera *renderCamera);

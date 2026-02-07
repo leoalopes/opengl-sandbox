@@ -41,8 +41,11 @@ void Window::terminate() {
 Scene *Window::createScene() {
     std::shared_ptr<Shader> postProcessingShader = std::make_shared<Shader>(
         "assets/shaders/identity.vert", "assets/shaders/gamma.frag");
-    this->scene = std::make_unique<Scene>(this->screenWidth, this->screenHeight,
-                                          postProcessingShader);
+    std::shared_ptr<Shader> directionalLightShader = std::make_shared<Shader>(
+        "assets/shaders/origin.vert", "assets/shaders/round_point.frag");
+    this->scene =
+        std::make_unique<Scene>(this->screenWidth, this->screenHeight,
+                                postProcessingShader, directionalLightShader);
     return this->scene.get();
 }
 
