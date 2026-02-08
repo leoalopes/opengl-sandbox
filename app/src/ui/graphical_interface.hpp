@@ -8,10 +8,10 @@ class GraphicalInterface {
   public:
     Scene *scene;
 
-    float toggleCooldown = 0;
     bool acceptEvents = false;
     bool showDemoWindow = false;
-    bool showSceneController = false;
+    bool showLightController = false;
+    bool showObjectController = false;
     bool showPerformanceOverlay = true;
 
     GraphicalInterface(Scene *scene) : scene(scene) {};
@@ -23,6 +23,7 @@ class GraphicalInterface {
     void draw();
 
   private:
-    void drawSceneController();
+    void drawLightController();
+    void drawObjectController();
     void drawPerformanceOverlay(float framerate);
 };

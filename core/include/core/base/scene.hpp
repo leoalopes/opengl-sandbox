@@ -36,10 +36,8 @@ class Scene {
     std::vector<std::shared_ptr<PointLight>> pointLights;
     std::vector<std::shared_ptr<SpotLight>> spotLights;
     bool debugLights = 0;
-    float debugLightsToggleCooldown = 0;
 
     SpotLight flashlight;
-    float flashlightToggleCooldown = 0;
     bool flashlightEnabled = false;
     bool renderToTexture = false;
 

@@ -30,15 +30,16 @@ void GraphicalInterface::draw() {
         ImGui::ShowDemoWindow(&this->showDemoWindow);
     }
 
-    this->drawSceneController();
+    this->drawLightController();
+    this->drawObjectController();
     this->drawPerformanceOverlay(io.Framerate);
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GraphicalInterface::drawSceneController() {
-    if (!this->showSceneController) {
+void GraphicalInterface::drawLightController() {
+    if (!this->showLightController) {
         return;
     }
 
@@ -50,7 +51,7 @@ void GraphicalInterface::drawSceneController() {
     ImGui::SetNextWindowSize(ImVec2(400.0f, viewportSize.y - padding * 2));
     ImGui::SetNextWindowPos(ImVec2(viewportSize.x - 400.0f - padding, padding));
 
-    if (ImGui::Begin("Scene controller", NULL, flags)) {
+    if (ImGui::Begin("Light controller", NULL, flags)) {
         if (ImGui::CollapsingHeader("Directional light",
                                     ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::SeparatorText("Color");
@@ -102,22 +103,19 @@ void GraphicalInterface::drawSceneController() {
                                     ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Indent();
             for (size_t i = 0; i < this->scene->pointLights.size(); i++) {
-                std::string lightName = std::to_string(i + 1);
-                if (ImGui::CollapsingHeader(lightName.c_str(),
-                                            ImGuiTreeNodeFlags_DefaultOpen)) {
+                std::string lightName = "Pointlight " + std::to_string(i + 1);
+                if (ImGui::CollapsingHeader(lightName.c_str())) {
                     ImGui::SeparatorText("Color");
 
                     ImGui::Text("Diffuse ");
                     ImGui::SameLine();
-                    ImGui::ColorEdit3(
-                        ("##pl_" + lightName + "_diffuse").c_str(),
-                        &this->scene->pointLights[i]->diffuse.x);
+                    ImGui::ColorEdit3((lightName + "_diffuse").c_str(),
+                                      &this->scene->pointLights[i]->diffuse.x);
 
                     ImGui::Text("Specular");
                     ImGui::SameLine();
-                    ImGui::ColorEdit3(
-                        ("##pl_" + lightName + "_specular").c_str(),
-                        &this->scene->pointLights[i]->specular.x);
+                    ImGui::ColorEdit3((lightName + "_specular").c_str(),
+                                      &this->scene->pointLights[i]->specular.x);
                     ImGui::Spacing();
 
                     ImGui::SeparatorText("Position");
@@ -125,7 +123,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("X");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##pl_" + lightName + "_pos_x").c_str(),
+                    ImGui::DragFloat((lightName + "_pos_x").c_str(),
                                      &this->scene->pointLights[i]->position.x,
                                      0.1f);
 
@@ -133,7 +131,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("Y");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##pl_" + lightName + "_pos_y").c_str(),
+                    ImGui::DragFloat((lightName + "_pos_y").c_str(),
                                      &this->scene->pointLights[i]->position.y,
                                      0.1f);
 
@@ -141,7 +139,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("Z");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##pl_" + lightName + "_pos_z").c_str(),
+                    ImGui::DragFloat((lightName + "_pos_z").c_str(),
                                      &this->scene->pointLights[i]->position.z,
                                      0.1f);
                     ImGui::Spacing();
@@ -154,22 +152,19 @@ void GraphicalInterface::drawSceneController() {
                                     ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Indent();
             for (size_t i = 0; i < this->scene->spotLights.size(); i++) {
-                std::string lightName = std::to_string(i + 1);
-                if (ImGui::CollapsingHeader(lightName.c_str(),
-                                            ImGuiTreeNodeFlags_DefaultOpen)) {
+                std::string lightName = "Spotlight " + std::to_string(i + 1);
+                if (ImGui::CollapsingHeader(lightName.c_str())) {
                     ImGui::SeparatorText("Color");
 
                     ImGui::Text("Diffuse ");
                     ImGui::SameLine();
-                    ImGui::ColorEdit3(
-                        ("##sl_" + lightName + "_diffuse").c_str(),
-                        &this->scene->spotLights[i]->diffuse.x);
+                    ImGui::ColorEdit3((lightName + "_diffuse").c_str(),
+                                      &this->scene->spotLights[i]->diffuse.x);
 
                     ImGui::Text("Specular");
                     ImGui::SameLine();
-                    ImGui::ColorEdit3(
-                        ("##sl_" + lightName + "_specular").c_str(),
-                        &this->scene->spotLights[i]->specular.x);
+                    ImGui::ColorEdit3((lightName + "_specular").c_str(),
+                                      &this->scene->spotLights[i]->specular.x);
                     ImGui::Spacing();
 
                     ImGui::SeparatorText("Position");
@@ -177,7 +172,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("X");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##sl_" + lightName + "_pos_x").c_str(),
+                    ImGui::DragFloat((lightName + "_pos_x").c_str(),
                                      &this->scene->spotLights[i]->position.x,
                                      0.1f);
 
@@ -185,7 +180,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("Y");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##sl_" + lightName + "_pos_y").c_str(),
+                    ImGui::DragFloat((lightName + "_pos_y").c_str(),
                                      &this->scene->spotLights[i]->position.y,
                                      0.1f);
 
@@ -193,7 +188,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("Z");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##sl_" + lightName + "_pos_z").c_str(),
+                    ImGui::DragFloat((lightName + "_pos_z").c_str(),
                                      &this->scene->spotLights[i]->position.z,
                                      0.1f);
                     ImGui::Spacing();
@@ -203,7 +198,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("X");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##sl_" + lightName + "_dir_x").c_str(),
+                    ImGui::DragFloat((lightName + "_dir_x").c_str(),
                                      &this->scene->spotLights[i]->direction.x,
                                      0.1f, -1.0f, 1.0f, "%.2f");
 
@@ -211,7 +206,7 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("Y");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##sl_" + lightName + "_dir_y").c_str(),
+                    ImGui::DragFloat((lightName + "_dir_y").c_str(),
                                      &this->scene->spotLights[i]->direction.y,
                                      0.1f, -1.0f, 1.0f, "%.2f");
 
@@ -219,13 +214,114 @@ void GraphicalInterface::drawSceneController() {
                     ImGui::Text("Z");
                     ImGui::SameLine();
                     ImGui::SetNextItemWidth(100.0f);
-                    ImGui::DragFloat(("##sl_" + lightName + "_dir_z").c_str(),
+                    ImGui::DragFloat((lightName + "_dir_z").c_str(),
                                      &this->scene->spotLights[i]->direction.z,
                                      0.1f, -1.0f, 1.0f, "%.2f");
                     ImGui::Spacing();
                 }
             }
             ImGui::Unindent();
+        }
+    }
+
+    ImGui::End();
+}
+
+void GraphicalInterface::drawObjectController() {
+    if (!this->showObjectController) {
+        return;
+    }
+
+    ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+
+    float padding = 5.0f;
+    ImVec2 viewportSize = ImGui::GetMainViewport()->Size;
+    ImGui::SetNextWindowSize(ImVec2(400.0f, viewportSize.y - padding * 2));
+    ImGui::SetNextWindowPos(ImVec2(viewportSize.x - 400.0f - padding, padding));
+
+    if (ImGui::Begin("Object controller", NULL, flags)) {
+        for (size_t i = 0; i < this->scene->objects.size(); i++) {
+            std::string objectName = "Object " + std::to_string(i + 1);
+            if (ImGui::CollapsingHeader(objectName.c_str())) {
+                ImGui::SeparatorText("Position");
+
+                ImGui::Text("X");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_pos_x").c_str(),
+                                 &this->scene->objects[i]->transform.position.x,
+                                 0.1f);
+
+                ImGui::SameLine();
+                ImGui::Text("Y");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_pos_y").c_str(),
+                                 &this->scene->objects[i]->transform.position.y,
+                                 0.1f);
+
+                ImGui::SameLine();
+                ImGui::Text("Z");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_pos_z").c_str(),
+                                 &this->scene->objects[i]->transform.position.z,
+                                 0.1f);
+                ImGui::Spacing();
+
+                ImGui::SeparatorText("Rotation");
+
+                ImGui::Text("X");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_rot_x").c_str(),
+                                 &this->scene->objects[i]->transform.rotation.x,
+                                 0.1f);
+
+                ImGui::SameLine();
+                ImGui::Text("Y");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_rot_y").c_str(),
+                                 &this->scene->objects[i]->transform.rotation.y,
+                                 0.1f);
+
+                ImGui::SameLine();
+                ImGui::Text("Z");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_rot_z").c_str(),
+                                 &this->scene->objects[i]->transform.rotation.z,
+                                 0.1f);
+                ImGui::Spacing();
+
+                ImGui::SeparatorText("Scale");
+
+                ImGui::Text("X");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_scale_x").c_str(),
+                                 &this->scene->objects[i]->transform.scale.x,
+                                 0.1f);
+
+                ImGui::SameLine();
+                ImGui::Text("Y");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_scale_y").c_str(),
+                                 &this->scene->objects[i]->transform.scale.y,
+                                 0.1f);
+
+                ImGui::SameLine();
+                ImGui::Text("Z");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(100.0f);
+                ImGui::DragFloat(("##obj_" + objectName + "_scale_z").c_str(),
+                                 &this->scene->objects[i]->transform.scale.z,
+                                 0.1f);
+                ImGui::Spacing();
+            }
         }
     }
 

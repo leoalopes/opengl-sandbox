@@ -1,5 +1,5 @@
 #pragma once
-#import <glad/glad.h>
+#include <glad/glad.h>
 
 #include "core/graphics/texture.hpp"
 #include <iostream>
