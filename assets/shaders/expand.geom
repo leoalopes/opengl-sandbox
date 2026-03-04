@@ -6,12 +6,14 @@ in VertexData {
     vec3 Position;
     vec3 OriginalNormal;
     vec3 Normal;
+    mat3 TBNMatrix;
     vec2 TexCoords;
 } vertexInput[];
 
 out GeometryData {
     vec3 Position;
     vec3 Normal;
+    mat3 TBNMatrix;
     vec2 TexCoords;
 } geometryOutput;
 

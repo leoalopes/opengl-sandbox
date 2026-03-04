@@ -50,6 +50,7 @@ struct SpotLight {
 in GeometryData {
     vec3 Position;
     vec3 Normal;
+    mat3 TBNMatrix;
     vec2 TexCoords;
 } geometryInput;
 
@@ -66,6 +67,8 @@ uniform SpotLight spotLights[4];
 uniform Material material;
 
 uniform samplerCube environment;
+
+uniform int screenHalf;
 
 out vec4 FragColor;
 
@@ -100,6 +103,12 @@ vec3 calculateSpotLight(
 
 void main() {
     vec3 normal = normalize(geometryInput.Normal);
+    if (material.hasNormalTexture && gl_FragCoord.x > screenHalf) {
+        normal = vec3(texture(material.normalTexture, geometryInput.TexCoords));
+        normal = normal * 2.0 - 1.0;
+        normal = normalize(geometryInput.TBNMatrix * normal);
+    }
+
     vec3 toTheCamera = normalize(cameraPosition - geometryInput.Position);
 
     vec3 metallicRoughness = vec3(texture(material.metallicRoughness, geometryInput.TexCoords));

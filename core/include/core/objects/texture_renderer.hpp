@@ -17,14 +17,20 @@ class TextureRenderer {
                     std::shared_ptr<Texture> textureTarget)
         : height(height), width(width), textureTarget(textureTarget) {}
 
-    virtual void initialize() {
+    virtual void initialize(unsigned int samples = 1) {
         glGenFramebuffers(1, &this->FBO);
         glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
 
         glGenRenderbuffers(1, &this->RBO);
         glBindRenderbuffer(GL_RENDERBUFFER, this->RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, this->width,
-                              this->height);
+        if (samples > 1) {
+            glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples,
+                                             GL_DEPTH24_STENCIL8, this->width,
+                                             this->height);
+        } else {
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
+                                  this->width, this->height);
+        }
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
                                   GL_RENDERBUFFER, this->RBO);
     }

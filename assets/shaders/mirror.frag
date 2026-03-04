@@ -41,6 +41,7 @@ struct SpotLight {
 in GeometryData {
     vec3 Position;
     vec3 Normal;
+    mat3 TBNMatrix;
     vec2 TexCoords;
 } geometryInput;
 

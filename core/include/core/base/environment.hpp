@@ -11,7 +11,7 @@ class Environment {
   public:
     Environment(std::array<std::string, 6> paths);
 
-    void draw(glm::mat4 view, glm::mat4 projection);
+    void draw(glm::mat4 view, glm::mat4 projection, int screenHalf);
 
   private:
     unsigned int VAO, VBO;

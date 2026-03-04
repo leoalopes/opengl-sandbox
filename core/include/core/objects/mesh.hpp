@@ -11,7 +11,7 @@
 class Mesh {
   public:
     Mesh(glm::mat4 transform, const float *positions, const float *normals,
-         const float *texCoords, size_t vertexCount,
+         const float *tangents, const float *texCoords, size_t vertexCount,
          std::vector<unsigned int> indices, size_t indexCount,
          Texture2D *baseColor, Texture2D *metallicRoughness,
          glm::vec2 materialOffset, glm::vec2 materialScale);
@@ -41,7 +41,8 @@ class Mesh {
     glm::mat4 transform;
 
     void mergeVertexAttributes(const float *positions, const float *normals,
-                               const float *texCoords, size_t vertexCount,
+                               const float *tangents, const float *texCoords,
+                               size_t vertexCount,
                                std::vector<unsigned int> indices,
                                glm::vec2 &materialOffset,
                                glm::vec2 &materialScale);

@@ -10,7 +10,6 @@ void Window::initialize() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-    glfwWindowHint(GLFW_SAMPLES, 8);
 
     this->glfwWindow = glfwCreateWindow(screenWidth, screenHeight,
                                         "OpenGL Sandbox", NULL, NULL);

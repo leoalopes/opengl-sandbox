@@ -2,12 +2,13 @@
 
 #include "core/base/camera.hpp"
 #include "core/base/environment.hpp"
+#include "core/graphics/texture_2d_multisample.hpp"
 #include "core/light/directional_light.hpp"
 #include "core/light/point_light.hpp"
 #include "core/light/spot_light.hpp"
 #include "core/objects/object.hpp"
 #include "core/objects/quad_primitive.hpp"
-#include "core/objects/texture_2d_renderer.hpp"
+#include "core/objects/texture_2d_renderer_multisample.hpp"
 
 #include <map>
 #include <memory>
@@ -25,8 +26,7 @@ class Scene {
     unsigned int screenHeight;
 
     Camera camera;
-    std::shared_ptr<Texture2D> sceneTexture;
-    Texture2DRenderer sceneRenderer;
+    Texture2DRendererMultisample sceneRenderer;
     std::shared_ptr<Shader> postProcessingShader;
     QuadPrimitive fullscreenQuad;
 
@@ -56,5 +56,5 @@ class Scene {
     void draw(Camera *renderCamera, int width, int height, int depth = 0);
     void drawObject(Camera *renderCamera, Object *object, Shader *shader,
                     glm::mat4 projectionMatrix, glm::mat4 viewMatrix,
-                    float time, int depth = 0);
+                    int screenHalf, float time, int depth = 0);
 };

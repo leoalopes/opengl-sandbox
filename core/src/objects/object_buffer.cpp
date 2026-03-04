@@ -26,9 +26,14 @@ ObjectBuffer::ObjectBuffer(std::vector<Vertex> vertices,
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (void *)offsetof(Vertex, normal));
 
-    // TexCoords
+    // Tangents
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (void *)offsetof(Vertex, tangent));
+
+    // TexCoords
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (void *)offsetof(Vertex, texCoords));
 
     glBindVertexArray(0);

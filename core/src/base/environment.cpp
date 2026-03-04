@@ -26,7 +26,7 @@ void Environment::setupBuffer() {
                           (void *)0);
 }
 
-void Environment::draw(glm::mat4 view, glm::mat4 projection) {
+void Environment::draw(glm::mat4 view, glm::mat4 projection, int screenHalf) {
     glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_FALSE);
 
@@ -41,6 +41,7 @@ void Environment::draw(glm::mat4 view, glm::mat4 projection) {
     this->shader.setMatrix("view", glm::value_ptr(viewWithoutTranslation));
     this->shader.setMatrix("projection", glm::value_ptr(projection));
     this->shader.setInt("skybox", 7);
+    this->shader.setInt("screenHalf", screenHalf);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 

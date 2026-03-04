@@ -9,9 +9,9 @@ Object::Object(std::shared_ptr<Shader> shader) : shader(shader) {}
 void Object::setupDynamicEnvironmentMap() {
     this->useDynamicEnvironmentMap = true;
     this->dynamicEnvironmentMapTextureTarget =
-        std::make_shared<Texture3D>(800, 800);
+        std::make_shared<Texture3D>(400, 400);
     this->dynamicEnvironmentMapRenderer = std::make_unique<Texture3DRenderer>(
-        800, 800, this->dynamicEnvironmentMapTextureTarget);
+        400, 400, this->dynamicEnvironmentMapTextureTarget);
 }
 
 void Object::draw() { this->draw(this->shader.get()); }

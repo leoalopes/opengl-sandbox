@@ -18,12 +18,9 @@ Scene::Scene(unsigned int screenWidth, unsigned int screenHeight,
                  glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(20.0f)),
                  glm::vec3(0.9f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f,
                  lightDebugShader),
-      sceneTexture(std::make_shared<Texture2D>(
-          screenWidth, screenHeight, GL_RGBA, GL_CLAMP_TO_EDGE,
-          GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR)),
-      sceneRenderer(screenHeight, screenWidth, sceneTexture),
+      sceneRenderer(screenHeight, screenWidth, 4),
       postProcessingShader(postProcessingShader),
-      fullscreenQuad(postProcessingShader, sceneTexture) {};
+      fullscreenQuad(postProcessingShader, sceneRenderer.blitTexture) {};
 
 std::multimap<float, std::shared_ptr<Object>>
 Scene::getObjectsByDistance(Camera *renderCamera) {
@@ -47,23 +44,26 @@ void Scene::draw(int depth) {
     this->draw(&this->camera, screenWidth, screenHeight, depth);
 
     if (this->renderToTexture) {
+        this->sceneRenderer.blit();
         this->sceneRenderer.unbind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
         postProcessingShader->use();
+        postProcessingShader->setInt("screenHalf", screenWidth / 2);
         fullscreenQuad.draw(postProcessingShader.get());
         glEnable(GL_DEPTH_TEST);
     }
 }
 
 void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
+    int screenHalf = width / 2;
     float currentFrame = static_cast<float>(glfwGetTime());
     glm::mat4 projectionMatrix =
         glm::perspective(glm::radians(renderCamera->fov),
                          (float)width / (float)height, 0.1f, 100.0f);
     glm::mat4 viewMatrix = renderCamera->getLookAt();
     if (this->environment) {
-        this->environment->draw(viewMatrix, projectionMatrix);
+        this->environment->draw(viewMatrix, projectionMatrix, width / 2);
     }
 
     auto objectsByDistance = this->getObjectsByDistance(renderCamera);
@@ -78,7 +78,8 @@ void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
         flashlight.direction = renderCamera->forwardVector;
 
         this->drawObject(renderCamera, object.get(), object->shader.get(),
-                         projectionMatrix, viewMatrix, currentFrame, depth);
+                         projectionMatrix, viewMatrix, screenHalf, currentFrame,
+                         depth);
     }
 
     if (this->debugLights && renderCamera == &this->camera) {
@@ -94,7 +95,7 @@ void Scene::draw(Camera *renderCamera, int width, int height, int depth) {
 
 void Scene::drawObject(Camera *renderCamera, Object *object, Shader *shader,
                        glm::mat4 projectionMatrix, glm::mat4 viewMatrix,
-                       float time, int depth) {
+                       int screenHalf, float time, int depth) {
     if (object->useDynamicEnvironmentMap && depth == 0) {
         bool originalFlashlightEnabled = flashlightEnabled;
         glm::vec3 originalFlashlightPosition = flashlight.position;
@@ -222,6 +223,8 @@ void Scene::drawObject(Camera *renderCamera, Object *object, Shader *shader,
 
     shader->setInt("environment", object->useDynamicEnvironmentMap ? 8 : 7);
     shader->setFloat("time", time);
+
+    shader->setInt("screenHalf", screenHalf);
 
     object->draw(shader);
 }

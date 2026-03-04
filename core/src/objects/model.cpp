@@ -10,6 +10,7 @@
 void Model::loadModel() {
     std::string error;
     std::string warn;
+    std::cout << "Loading .gltf file: " << path << '\n';
     bool loaded = tgLoader.LoadASCIIFromFile(&tgModel, &error, &warn, path);
 
     if (!warn.empty()) {
@@ -24,6 +25,8 @@ void Model::loadModel() {
         std::cout << "Failed to parse .gltf file" << '\n';
         throw "Failed to load model from path " + path;
     }
+
+    std::cout << "Extracting information for .gltf file: " << path << '\n';
 
     for (size_t i = 0; i < tgModel.textures.size(); i++) {
         this->processTexture(tgModel.textures.at(i), i);
@@ -134,6 +137,16 @@ void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
             &normalBuffer.data[normalBufferView.byteOffset +
                                normalAccessor.byteOffset]);
 
+        const tinygltf::Accessor &tangentAccessor =
+            tgModel.accessors[attributes.at("TANGENT")];
+        const tinygltf::BufferView &tangentBufferView =
+            tgModel.bufferViews[tangentAccessor.bufferView];
+        const tinygltf::Buffer &tangentBuffer =
+            tgModel.buffers[tangentBufferView.buffer];
+        const float *tangents = reinterpret_cast<const float *>(
+            &tangentBuffer.data[tangentBufferView.byteOffset +
+                                tangentAccessor.byteOffset]);
+
         const tinygltf::Accessor &texAccessor =
             tgModel.accessors[attributes.at("TEXCOORD_0")];
         const tinygltf::BufferView &texBufferView =
@@ -188,6 +201,7 @@ void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
         }
 
         if (positionAccessor.count != normalAccessor.count ||
+            positionAccessor.count != tangentAccessor.count ||
             positionAccessor.count != texAccessor.count ||
             indexAccessor.count <= 0) {
             std::cerr << "Error: skipping primitive due mismatch between "
@@ -195,6 +209,7 @@ void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
                       << '\n';
             std::cout << "Positions: " << positionAccessor.count << '\n';
             std::cout << "Normals: " << normalAccessor.count << '\n';
+            std::cout << "Tangents: " << tangentAccessor.count << '\n';
             std::cout << "Textures: " << texAccessor.count << '\n';
             std::cout << "Indices: " << indexAccessor.count << '\n';
             continue;
@@ -205,6 +220,7 @@ void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
             material.pbrMetallicRoughness.baseColorTexture.index;
         const int metallicRoughnessTexture =
             material.pbrMetallicRoughness.metallicRoughnessTexture.index;
+        const int normalMapTexture = material.normalTexture.index;
 
         if (baseColorTexture < 0) {
             std::cerr
@@ -250,17 +266,20 @@ void Model::processMesh(const tinygltf::Mesh &mesh, glm::mat4 transform) {
             }
         }
 
-        Mesh meshInstance{transform,
-                          positions,
-                          normals,
-                          texCoords,
-                          positionAccessor.count,
-                          convertedIndices,
-                          indexAccessor.count,
-                          &this->textures.at(baseColorTexture),
-                          &this->textures.at(metallicRoughnessTexture),
-                          materialOffset,
-                          materialScale};
+        Mesh meshInstance{
+            transform,
+            positions,
+            normals,
+            tangents,
+            texCoords,
+            positionAccessor.count,
+            convertedIndices,
+            indexAccessor.count,
+            &this->textures.at(baseColorTexture),
+            &this->textures.at(metallicRoughnessTexture),
+            materialOffset,
+            materialScale,
+        };
 
         const int emissiveTexture = material.emissiveTexture.index;
         if (emissiveTexture >= 0) {

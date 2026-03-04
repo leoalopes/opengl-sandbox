@@ -71,6 +71,7 @@ SpherePrimitive::SpherePrimitive(std::shared_ptr<Shader> shader,
         glm::mat4(1.0f),
         positions.data(),
         normals.data(),
+        nullptr,
         texCoords.data(),
         static_cast<size_t>(
             static_cast<int>(positions.size() / 3)), // vertex count
@@ -79,7 +80,8 @@ SpherePrimitive::SpherePrimitive(std::shared_ptr<Shader> shader,
         texture.get(),
         nullptr,
         glm::vec2(0.0f),
-        glm::vec2(1.0f)};
+        glm::vec2(1.0f),
+    };
 
     this->meshes.push_back(mainMesh);
 }

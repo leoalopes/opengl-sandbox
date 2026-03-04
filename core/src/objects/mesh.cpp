@@ -8,7 +8,7 @@
 #include <iostream>
 
 Mesh::Mesh(glm::mat4 transform, const float *positions, const float *normals,
-           const float *texCoords, size_t vertexCount,
+           const float *tangents, const float *texCoords, size_t vertexCount,
            std::vector<unsigned int> indices, size_t indexCount,
            Texture2D *baseColor, Texture2D *metallicRoughness,
            glm::vec2 materialOffset, glm::vec2 materialScale)
@@ -19,12 +19,14 @@ Mesh::Mesh(glm::mat4 transform, const float *positions, const float *normals,
         return;
     }
 
-    this->mergeVertexAttributes(positions, normals, texCoords, vertexCount,
-                                indices, materialOffset, materialScale);
+    this->mergeVertexAttributes(positions, normals, tangents, texCoords,
+                                vertexCount, indices, materialOffset,
+                                materialScale);
 }
 
 void Mesh::mergeVertexAttributes(const float *positions, const float *normals,
-                                 const float *texCoords, size_t vertexCount,
+                                 const float *tangents, const float *texCoords,
+                                 size_t vertexCount,
                                  std::vector<unsigned int> indices,
                                  glm::vec2 &materialOffset,
                                  glm::vec2 &materialScale) {
@@ -36,12 +38,19 @@ void Mesh::mergeVertexAttributes(const float *positions, const float *normals,
                            positions[i * 3 + 2]};
         glm::vec3 normal{normals[i * 3], normals[i * 3 + 1],
                          normals[i * 3 + 2]};
+
+        glm::vec4 tangent{0.0, 1.0, 0.0, 1.0};
+        if (tangents != nullptr) {
+            tangent = {tangents[i * 4], tangents[i * 4 + 1],
+                       tangents[i * 4 + 2], tangents[i * 4 + 3]};
+        }
+
         glm::vec2 texCoord{(texCoords[i * 2] * materialScale.x) +
                                materialOffset.x,
                            (texCoords[i * 2 + 1] * materialScale.y) +
                                materialOffset.y}; // Fixed stride
 
-        Vertex vertex{position, normal, texCoord};
+        Vertex vertex{position, normal, tangent, texCoord};
         vertices.push_back(vertex);
     }
 

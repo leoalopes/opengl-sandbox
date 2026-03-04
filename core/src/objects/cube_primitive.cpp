@@ -114,10 +114,9 @@ CubePrimitive::CubePrimitive(std::shared_ptr<Shader> shader,
                                          // Top face
                                          20, 21, 22, 22, 23, 20};
 
-    Mesh mainMesh{
-        glm::mat4(1.0f), positions, normals,       texCoords, 24,
-        indices,         36,        texture.get(), nullptr,   glm::vec2(0.0f),
-        glm::vec2(1.0f)};
+    Mesh mainMesh{glm::mat4(1.0f), positions, normals,         nullptr,
+                  texCoords,       24,        indices,         36,
+                  texture.get(),   nullptr,   glm::vec2(0.0f), glm::vec2(1.0f)};
 
     this->meshes.push_back(mainMesh);
 }

@@ -30,9 +30,10 @@ QuadPrimitive::QuadPrimitive(std::shared_ptr<Shader> shader,
     };
 
     Mesh mainMesh{
-        glm::mat4(1.0f), positions, normals,       texCoords, 4,
-        indices,         6,         texture.get(), nullptr,   glm::vec2(0.0f),
-        glm::vec2(1.0f)};
+        glm::mat4(1.0f), positions, normals,         nullptr,
+        texCoords,       4,         indices,         6,
+        texture.get(),   nullptr,   glm::vec2(0.0f), glm::vec2(1.0f),
+    };
 
     this->meshes.push_back(mainMesh);
 }
