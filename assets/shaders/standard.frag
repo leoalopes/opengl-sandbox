@@ -103,7 +103,7 @@ vec3 calculateSpotLight(
 
 void main() {
     vec3 normal = normalize(geometryInput.Normal);
-    if (material.hasNormalTexture && gl_FragCoord.x > screenHalf) {
+    if (material.hasNormalTexture) {
         normal = vec3(texture(material.normalTexture, geometryInput.TexCoords));
         normal = normal * 2.0 - 1.0;
         normal = normalize(geometryInput.TBNMatrix * normal);

@@ -39,7 +39,7 @@ void Window::terminate() {
 
 Scene *Window::createScene() {
     std::shared_ptr<Shader> postProcessingShader = std::make_shared<Shader>(
-        "assets/shaders/identity.vert", "assets/shaders/gamma.frag");
+        "assets/shaders/identity.vert", "assets/shaders/post_processing.frag");
     std::shared_ptr<Shader> lightDebugShader = std::make_shared<Shader>(
         "assets/shaders/origin.vert", "assets/shaders/round_point.frag");
     this->scene =

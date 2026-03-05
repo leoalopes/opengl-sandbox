@@ -19,6 +19,6 @@ void PointLight::updateShader(std::string prefix, Shader *shader) {
 }
 
 void PointLight::debugDraw() {
-    this->debugRenderer.color = this->diffuse * 2.0f;
+    this->debugRenderer.color = this->diffuse * 100.0f;
     this->debugRenderer.draw(this->position);
 }

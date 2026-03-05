@@ -50,6 +50,7 @@ void Scene::draw(int depth) {
         glDisable(GL_DEPTH_TEST);
         postProcessingShader->use();
         postProcessingShader->setInt("screenHalf", screenWidth / 2);
+        postProcessingShader->setFloat("exposure", exposure);
         fullscreenQuad.draw(postProcessingShader.get());
         glEnable(GL_DEPTH_TEST);
     }

@@ -17,7 +17,7 @@ void DirectionalLight::updateShader(std::string prefix, Shader *shader) {
 }
 
 void DirectionalLight::debugDraw() {
-    this->debugRenderer.color = this->diffuse * 2.0f;
+    this->debugRenderer.color = this->diffuse * 2000.0f;
 
     Window &windowInstance = Window::getInstance();
     glm::vec3 position = windowInstance.scene->camera.location;

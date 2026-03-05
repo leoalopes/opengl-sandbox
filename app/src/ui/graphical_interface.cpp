@@ -52,6 +52,12 @@ void GraphicalInterface::drawLightController() {
     ImGui::SetNextWindowPos(ImVec2(viewportSize.x - 400.0f - padding, padding));
 
     if (ImGui::Begin("Light controller", NULL, flags)) {
+        ImGui::Text("Exposure ");
+        ImGui::SameLine();
+        ImGui::DragFloat("##exposure", &this->scene->exposure, 0.1f, 0.1f, 1.0f,
+                         "%.2f");
+        ImGui::Spacing();
+
         if (ImGui::CollapsingHeader("Directional light",
                                     ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::SeparatorText("Color");

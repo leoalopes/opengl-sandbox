@@ -23,6 +23,6 @@ void SpotLight::updateShader(std::string prefix, Shader *shader) {
 }
 
 void SpotLight::debugDraw() {
-    this->debugRenderer.color = this->diffuse * 2.0f;
+    this->debugRenderer.color = this->diffuse * 10.0f;
     this->debugRenderer.draw(this->position);
 }

@@ -2,7 +2,6 @@
 
 #include "core/base/camera.hpp"
 #include "core/base/environment.hpp"
-#include "core/graphics/texture_2d_multisample.hpp"
 #include "core/light/directional_light.hpp"
 #include "core/light/point_light.hpp"
 #include "core/light/spot_light.hpp"
@@ -24,6 +23,7 @@ class Scene {
   public:
     unsigned int screenWidth;
     unsigned int screenHeight;
+    float exposure = 1.0f;
 
     Camera camera;
     Texture2DRendererMultisample sceneRenderer;

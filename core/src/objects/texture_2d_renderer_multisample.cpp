@@ -21,7 +21,7 @@ Texture2DRendererMultisample::Texture2DRendererMultisample(unsigned int height,
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     this->blitTexture =
-        std::make_shared<Texture2D>(width, height, GL_RGBA, GL_CLAMP_TO_EDGE,
+        std::make_shared<Texture2D>(width, height, GL_RGBA16F, GL_CLAMP_TO_EDGE,
                                     GL_CLAMP_TO_EDGE, GL_LINEAR, GL_LINEAR);
     this->blitTarget =
         std::make_unique<Texture2DRenderer>(height, width, this->blitTexture);
